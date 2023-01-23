@@ -69,6 +69,14 @@ app.use("/", addressRoute);
 import socialMediaRoute from "./resources/socialMedia/socialMediaRoute.js";
 app.use("/", socialMediaRoute);
 
+// State
+import stateRoute from "./resources/state/stateRoute.js";
+app.use("/", stateRoute);
+
+// State
+import cityRoute from "./resources/city/cityRoute.js";
+app.use("/", cityRoute);
+
 // Connect to the database before listening
 connectDatabase().then(() => {
   app.listen(PORT, () => {
