@@ -3,7 +3,7 @@ import User from "../user/userModel.js"
 import mongoose from "mongoose"
 import cloudinary from "../../util/cloudinary.js";
 import { sendResponse } from "../../util/sendResponse.js";
-import { mediaDel } from "../../util/mediadel.js";
+import { mediaDel } from "../../util/mediaDel.js";
 
 export const getAllBooks = async (req, res, next) => {
   try {

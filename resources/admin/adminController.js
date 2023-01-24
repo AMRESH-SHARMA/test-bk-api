@@ -3,7 +3,7 @@ import mongoose from "mongoose"
 import { sendResponse } from "../../util/sendResponse.js";
 import { newToken } from '../../util/jwt.js'
 import cloudinary from "../../util/cloudinary.js";
-import { mediaDel } from "../../util/mediadel.js";
+import { mediaDel } from "../../util/mediaDel.js";
 
 //Register a admin
 export const register = async (req, res, next) => {

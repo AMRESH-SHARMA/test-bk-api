@@ -1,7 +1,7 @@
 import Logos from "./logosModel.js"
 import cloudinary from "../../util/cloudinary.js";
 import { sendResponse } from "../../util/sendResponse.js";
-import { mediaDel } from "../../util/mediadel.js";
+import { mediaDel } from "../../util/mediaDel.js";
 
 export const getAllLogos = async (req, res, next) => {
   try {
