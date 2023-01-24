@@ -264,8 +264,10 @@ export const addUser = async (req, res, next) => {
 //Get all users(except admin)
 export const getAllUser = async (req, res, next) => {
   try {
-    const users = await User.find().all('role', ['user']);
-    sendResponse(200, true, users, res)
+    const { skip, limit } = req.query
+    const totalDocs = await User.countDocuments();
+    const result = await User.find().all('role', ['user']).skip(skip).limit(limit)
+    sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)

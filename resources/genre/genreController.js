@@ -5,8 +5,10 @@ import { mediaDel } from "../../util/mediaDel.js";
 
 export const getAllgenres = async (req, res, next) => {
   try {
-    const genres = await Genre.find();
-    sendResponse(200, true, genres, res)
+    const { skip, limit } = req.query
+    const totalDocs = await Genre.countDocuments();
+    const result = await Genre.find().skip(skip).limit(limit)
+    sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)

@@ -3,8 +3,10 @@ import { sendResponse } from "../../util/sendResponse.js";
 
 export const getAllStates = async (req, res, next) => {
   try {
-    const states = await State.find().populate('state')
-    sendResponse(200, true, states, res)
+    const { skip, limit } = req.query
+    const totalDocs = await State.countDocuments();
+    const result = await State.find().populate('state').skip(skip).limit(limit)
+    sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)

@@ -3,8 +3,10 @@ import { sendResponse } from "../../util/sendResponse.js";
 
 export const getAlllanguages = async (req, res, next) => {
   try {
-    const languages = await Language.find();
-    sendResponse(200, true, languages, res)
+    const { skip, limit } = req.query
+    const totalDocs = await Language.countDocuments();
+    const result = await Language.find().skip(skip).limit(limit)
+    sendResponse(200, true, {totalDocs,result}, res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)

@@ -3,8 +3,10 @@ import { sendResponse } from "../../util/sendResponse.js";
 
 export const getAllCities = async (req, res, next) => {
   try {
-    const result = await City.find().populate('state')
-    sendResponse(200, true, result, res)
+    const { skip, limit } = req.query
+    const totalDocs = await City.countDocuments();
+    const result = await City.find().populate('state').skip(skip).limit(limit)
+    sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
@@ -44,7 +46,7 @@ export const addCity = async (req, res, next) => {
 
 export const updateCity = async (req, res, next) => {
   try {
-    const { city,state } = req.body;
+    const { city, state } = req.body;
 
     const newcityData = {
       city,
