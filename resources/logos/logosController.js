@@ -1,6 +1,7 @@
 import Logos from "./logosModel.js"
 import cloudinary from "../../util/cloudinary.js";
 import { sendResponse } from "../../util/sendResponse.js";
+import { mediaDel } from "../../util/mediadel.js";
 
 export const getAllLogos = async (req, res, next) => {
   try {
@@ -54,7 +55,7 @@ console.log(req.file);
         }
       })
     }
-
+    mediaDel()
     if (Object.keys(payloadObj).length != 0) {
       payloadObj._id = uniqueId
       await Logos.findByIdAndUpdate(uniqueId, payloadObj);

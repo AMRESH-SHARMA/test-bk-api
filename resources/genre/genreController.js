@@ -1,6 +1,7 @@
 import Genre from "./genreModel.js"
 import cloudinary from "../../util/cloudinary.js";
 import { sendResponse } from "../../util/sendResponse.js";
+import { mediaDel } from "../../util/mediadel.js";
 
 export const getAllgenres = async (req, res, next) => {
   try {
@@ -38,6 +39,8 @@ export const addgenre = async (req, res, next) => {
       _id: uniqueId,
       genre,
     }
+
+
     await cloudinary.v2.uploader.upload(req.file.path, {
       folder: "genre/",
     }).then((result1) => {
@@ -45,6 +48,7 @@ export const addgenre = async (req, res, next) => {
         public_id: result1.public_id,
         url: result1.url,
       }
+      mediaDel()
     })
 
     const result = await Genre.create(payloadObj)

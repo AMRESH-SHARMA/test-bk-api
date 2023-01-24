@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 import { sendResponse } from "../../util/sendResponse.js";
 import { newToken } from '../../util/jwt.js'
 import cloudinary from "../../util/cloudinary.js";
+import { mediaDel } from "../../util/mediadel.js";
 
 //Register a admin
 export const register = async (req, res, next) => {
@@ -299,6 +300,7 @@ export const updateAdmin = async (req, res, next) => {
           public_id: result1.public_id,
           url: result1.url,
         }
+        mediaDel()
       })
     }
 

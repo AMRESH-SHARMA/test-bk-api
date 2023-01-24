@@ -3,6 +3,7 @@ import User from "../user/userModel.js"
 import mongoose from "mongoose"
 import cloudinary from "../../util/cloudinary.js";
 import { sendResponse } from "../../util/sendResponse.js";
+import { mediaDel } from "../../util/mediadel.js";
 
 export const getAllBooks = async (req, res, next) => {
   try {
@@ -81,6 +82,7 @@ export const addBook = async (req, res, next) => {
         }
       })
     }
+    mediaDel()
     const newBook = await Book.create(payloadObj)
 
     const user = await User.findById(uploadedBy)
