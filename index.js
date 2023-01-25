@@ -80,6 +80,7 @@ app.use("/", cityRoute);
 // InternetHandlingFees
 import internetHandlingFeesRoute from "./resources/internetHandlingFees/internetHandlingFeesRoute.js";
 app.use("/", internetHandlingFeesRoute);
+
 // Delivery Fees
 import deliveryFeesRoute from "./resources/deliveryFees/deliveryFeesRoute.js";
 app.use("/", deliveryFeesRoute);
