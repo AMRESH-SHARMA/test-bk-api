@@ -73,9 +73,16 @@ app.use("/", socialMediaRoute);
 import stateRoute from "./resources/state/stateRoute.js";
 app.use("/", stateRoute);
 
-// State
+// CITY
 import cityRoute from "./resources/city/cityRoute.js";
 app.use("/", cityRoute);
+
+// InternetHandlingFees
+import internetHandlingFeesRoute from "./resources/internetHandlingFees/internetHandlingFeesRoute.js";
+app.use("/", internetHandlingFeesRoute);
+// Delivery Fees
+import deliveryFeesRoute from "./resources/deliveryFees/deliveryFeesRoute.js";
+app.use("/", deliveryFeesRoute);
 
 // Connect to the database before listening
 connectDatabase().then(() => {

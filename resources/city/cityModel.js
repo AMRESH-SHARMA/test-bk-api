@@ -22,5 +22,5 @@ citySchema.pre('save', function (next) {
   }
 })
 
-const cityModel = mongoose.model("city", citySchema);
+const cityModel = mongoose.model("City", citySchema);
 export default cityModel;
