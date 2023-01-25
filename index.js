@@ -85,6 +85,10 @@ app.use("/", internetHandlingFeesRoute);
 import deliveryFeesRoute from "./resources/deliveryFees/deliveryFeesRoute.js";
 app.use("/", deliveryFeesRoute);
 
+// Service Fees
+import serviceFeesRoute from "./resources/serviceFees/serviceFeesRoute.js";
+app.use("/", serviceFeesRoute);
+
 // Connect to the database before listening
 connectDatabase().then(() => {
   app.listen(PORT, () => {

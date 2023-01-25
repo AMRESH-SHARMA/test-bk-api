@@ -1,11 +1,11 @@
-import DeliveryFees from "./deliveryFeesModel.js"
+import ServiceFees from "./serviceFeesModel.js"
 import { sendResponse } from "../../util/sendResponse.js";
 
-export const getAllDeliveryFees = async (req, res, next) => {
+export const getAllServiceFees = async (req, res, next) => {
   try {
     const { skip, limit } = req.query
-    const totalDocs = await DeliveryFees.countDocuments();
-    const result = await DeliveryFees.find().populate('city').populate('state').skip(skip).limit(limit)
+    const totalDocs = await ServiceFees.countDocuments();
+    const result = await ServiceFees.find().populate('city').populate('state').skip(skip).limit(limit)
     sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);
@@ -13,11 +13,11 @@ export const getAllDeliveryFees = async (req, res, next) => {
   }
 };
 
-export const getSingleDeliveryFees = async (req, res, next) => {
+export const getSingleServiceFees = async (req, res, next) => {
   try {
-    const result = await DeliveryFees.findById(req.params.id).populate('city').populate('state')
+    const result = await ServiceFees.findById(req.params.id).populate('city').populate('state')
     if (!result) {
-      return sendResponse(400, false, `deliveryFees does not exist with Id: ${req.params.id}`, res)
+      return sendResponse(400, false, `ServiceFees does not exist with Id: ${req.params.id}`, res)
     }
     sendResponse(200, true, result, res)
   } catch (e) {
@@ -26,16 +26,16 @@ export const getSingleDeliveryFees = async (req, res, next) => {
   }
 };
 
-export const addDeliveryFees = async (req, res, next) => {
+export const addServiceFees = async (req, res, next) => {
   try {
     const { fees, city, state, uniqueId } = req.body;
 
-    const count = await DeliveryFees.findOne({ city: city }).countDocuments()
+    const count = await ServiceFees.findOne({ city: city }).countDocuments()
     if (count) {
       return sendResponse(400, false, 'city already exist', res)
     }
 
-    const result = await DeliveryFees.create({
+    const result = await ServiceFees.create({
       _id: uniqueId,
       fees,
       city,
@@ -51,17 +51,17 @@ export const addDeliveryFees = async (req, res, next) => {
 };
 
 
-export const updateDeliveryFees = async (req, res, next) => {
+export const updateServiceFees = async (req, res, next) => {
   try {
     const { fees, city, state } = req.body;
 
-    const newdeliveryFeesData = {
+    const newServiceFeesData = {
       fees,
       city,
       state
     };
 
-    await DeliveryFees.findByIdAndUpdate(req.params.id, newdeliveryFeesData);
+    await ServiceFees.findByIdAndUpdate(req.params.id, newServiceFeesData);
     sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
     if (e.code) {
@@ -71,10 +71,10 @@ export const updateDeliveryFees = async (req, res, next) => {
   }
 };
 
-export const deleteSingleDeliveryFees = async (req, res, next) => {
+export const deleteSingleServiceFees = async (req, res, next) => {
   try {
-    await DeliveryFees.deleteOne({ _id: req.params.id })
-    sendResponse(201, true, 'delivery Fees deleted', res)
+    await ServiceFees.deleteOne({ _id: req.params.id })
+    sendResponse(201, true, 'Service Fees deleted', res)
   } catch (e) {
     sendResponse(400, false, e.message, res)
   }
