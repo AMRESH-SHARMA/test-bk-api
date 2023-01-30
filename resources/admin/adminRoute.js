@@ -16,7 +16,7 @@ import {
   // getAllUser,
   // createUser,
 } from "./adminController.js"
-import { isAuthenticatedUser } from "../../util/auth.js"
+import { isAuthenticated } from "../../util/auth.js"
 import { vAccessToken, vAdminLogin } from "../../util/validators.js"
 import multer from "multer";
 const upload = multer({ dest: 'uploads/' })
@@ -25,7 +25,7 @@ router.route("/admin/register").post(register);
 
 router.route("/admin/login").post(vAdminLogin, login);
 
-router.route("/admin/change-password").post(isAuthenticatedUser, updatePassword);
+router.route("/admin/change-password").post(isAuthenticated, updatePassword);
 
 router.route("/admin/get-single-admin/:id").get(getSingleAdmin);
 

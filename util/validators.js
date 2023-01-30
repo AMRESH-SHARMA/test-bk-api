@@ -84,12 +84,12 @@ export const vAdminLogin = [
 ];
 
 export const vAccessToken = [
-  header('token')
+  header('Authorization')
     .exists()
-    .withMessage('access token does not exist')
+    .withMessage('access auth token does not exist')
     .bail()
     .notEmpty()
-    .withMessage('access token can not be empty')
+    .withMessage('access auth token can not be empty')
     .bail(),
   (req, res, next) => {
     const errors = validationResult(req);

@@ -19,7 +19,7 @@ import {
   getAllUser,
   addUser,
 } from "./userController.js"
-import { isAuthenticatedUser } from "../../util/auth.js"
+import { isAuthenticated } from "../../util/auth.js"
 import { vUserRegister, vUserLogin, vUsernameUnique, vAccessToken, vAddUser, vParamId, vUpdateStatus } from "../../util/validators.js"
 
 router.route("/user/register").post(vUserRegister, upload.single('image'), registerUser);
@@ -34,7 +34,7 @@ router.route("/user/create-user").post(vAddUser, addUser);
 
 router.route("/user/get-single-user/:id").get(vParamId, getSingleUser);
 
-router.route("/user/get-books-uploadedby-single-user").get(vAccessToken, isAuthenticatedUser, getBooksUploadedBySingleUser);
+router.route("/user/get-books-uploadedby-single-user").get(vAccessToken, isAuthenticated, getBooksUploadedBySingleUser);
 
 router.route("/user/update-user/:id").put(vParamId, upload.single('image'), updateUser);
 

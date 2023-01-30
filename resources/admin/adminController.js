@@ -77,8 +77,8 @@ export const logout = async (req, res, next) => {
 // Update admin password
 export const updatePassword = async (req, res, next) => {
   try {
-    // console.log(req.adminId);
-    const admin = await Admin.findById(req.adminId).select("+password");
+    console.log(req.authTokenData);
+    const admin = await Admin.findById(req.authTokenData.id).select("+password");
 
     const isPasswordMatched = await admin.comparePassword(req.body.currentPassword);
 
