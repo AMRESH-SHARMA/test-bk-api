@@ -54,24 +54,6 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpire: Date,
 }, { timestamps: true });
 
-// Password bcrypt before saving into db
-// userSchema.pre("save", async function (next) {
-//   try {
-//     const hash = await bcrypt.hash(this.password, 8);
-//     this.password = hash;
-//     next();
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
-// Password bcrypt before saving into db
-// userSchema.methods.hashPassword = async function (password) {
-//   const hash = await bcrypt.hash(this.password, 8);
-//   this.password = hash;
-//   return this.password
-// };
-
 // Compare Password
 userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);

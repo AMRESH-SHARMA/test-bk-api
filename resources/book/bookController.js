@@ -91,7 +91,7 @@ export const addBook = async (req, res, next) => {
     user.booksAdded.push(newBook._id)
     await user.save();
 
-    sendResponse(201, true, user, res)
+    sendResponse(201, true, newBook, res)
 
   } catch (e) {
     console.log(e);

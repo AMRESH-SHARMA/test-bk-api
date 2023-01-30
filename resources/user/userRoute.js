@@ -7,7 +7,7 @@ import {
   registerUser,
   loginUser,
   userNameExist,
-  logout,
+  // logout,
   // forgotPassword,
   // resetPassword,
   // updatePassword,
@@ -19,23 +19,21 @@ import {
   addUser,
 } from "./userController.js"
 import { isAuthenticatedUser } from "../../util/auth.js"
-import { vUserRegister, vUserLogin, vUsernameUnique, vAccessToken, vAddUser, vUpdate, vUpdateStatus } from "../../util/validators.js"
+import { vUserRegister, vUserLogin, vUsernameUnique, vAccessToken, vAddUser, vParamId, vUpdateStatus } from "../../util/validators.js"
 
-router.route("/user/register").post(upload.single('image'), registerUser);
+router.route("/user/register").post(vUserRegister, upload.single('image'), registerUser);
 
-router.route("/user/username-unique").post(userNameExist);
+router.route("/user/username-unique").post(vUsernameUnique, userNameExist);
 
-router.route("/user/login").post(loginUser);
-
-// router.route("/user/logout").delete(logout);
+router.route("/user/login").post(vUserLogin, loginUser);
 
 router.route("/user/get-users").get(getAllUser);
 
-router.route("/user/create-user").post(addUser);
+router.route("/user/create-user").post(vAddUser, addUser);
 
-router.route("/user/get-single-user/:id").get(getSingleUser);
+router.route("/user/get-single-user/:id").get(vParamId, getSingleUser);
 
-router.route("/user/update-user/:id").put(vUpdate, upload.single('image'), updateUser);
+router.route("/user/update-user/:id").put(vParamId, upload.single('image'), updateUser);
 
 router.route("/user/update-user-status").put(vUpdateStatus, updateUserStatus);
 
