@@ -7,9 +7,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  name: {
-    type: String,
-  },
+  // name: {
+  //   type: String,
+  // },
   email: {
     type: String,
     lowercase: true,
@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
+    default: "user",
   },
   approved: {
     type: Boolean,

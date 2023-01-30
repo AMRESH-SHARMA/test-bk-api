@@ -19,11 +19,25 @@ export const registerUser = async (req, res, next) => {
       return sendResponse(400, false, 'email already in use', res)
     }
 
-    const user = await User.create({
+    let newUserData = {
       userName,
       email,
       password,
-    });
+    }
+
+    if (req.file) {
+      await cloudinary.v2.uploader.upload(req.file.path, {
+        folder: "user/",
+      }).then((result) => {
+        newUserData.image = {
+          public_id: result.public_id,
+          url: result.url,
+        }
+        mediaDel()
+      })
+    }
+
+    const user = await User.create(newUserData);
     sendResponse(201, true, user, res)
   } catch (e) {
     console.log(e);

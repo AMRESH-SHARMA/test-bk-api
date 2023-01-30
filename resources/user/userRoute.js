@@ -21,7 +21,7 @@ import {
 import { isAuthenticatedUser } from "../../util/auth.js"
 import { vUserRegister, vUserLogin, vUsernameUnique, vAccessToken, vAddUser, vUpdateUser, vUpdateStatus } from "../../util/validators.js"
 
-router.route("/user/register").post(vUserRegister, registerUser);
+router.route("/user/register").post(vUserRegister, upload.single('image'), registerUser);
 
 router.route("/user/username-unique").post(vUsernameUnique, userNameExist);
 
