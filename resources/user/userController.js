@@ -36,16 +36,17 @@ export const registerUser = async (req, res, next) => {
 export const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email }).select("+password");
-  if (!user) {
-    return sendResponse(400, false, 'Invalid Email', res);
-  }
-
   try {
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return sendResponse(400, false, 'Invalid Email', res);
+    }
+
     const isPasswordMatched = await user.comparePassword(password);
     if (!isPasswordMatched) {
       return sendResponse(400, false, 'Invalid Password', res);
     }
+    const result = user
     const token = newToken(user)
     const options = {
       expires: new Date(
@@ -55,7 +56,7 @@ export const loginUser = async (req, res, next) => {
     };
 
     res.cookie("token", token, options)
-    sendResponse(201, true, token, res);
+    sendResponse(201, true, { token, result }, res);
   } catch (e) {
     sendResponse(400, false, e.message, res)
   }

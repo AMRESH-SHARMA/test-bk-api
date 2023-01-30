@@ -20,7 +20,7 @@ import { vAccessToken, vLogin, vAddUser, vUpdateUser, vUpdateStatus } from "../.
 
 // router.route("/user/register").post(vLogin, registerUser);
 
-// router.route("/user/login").post(vLogin, loginUser);
+router.route("/user/login").post(vLogin, loginUser);
 
 // router.route("/user/logout").delete(logout);
 
