@@ -326,27 +326,19 @@ export const getSingleUser = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
   try {
 
-    const { userName, email, phone, city } = req.body
-
-    const newUserData = {
-      userName: userName,
-      email: email,
-      phone: phone,
-      city: city
-    }
-
     if (req.file) {
       await cloudinary.v2.uploader.upload(req.file.path, {
         folder: "user/",
       }).then((result) => {
-        newUserData.image = {
+        req.body.image = {
           public_id: result.public_id,
           url: result.url,
         }
         mediaDel()
       })
     }
-    await User.findByIdAndUpdate(req.params.id, newUserData);
+
+    await User.findByIdAndUpdate(req.params.id, req.body);
     sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
     if (e.code) {
