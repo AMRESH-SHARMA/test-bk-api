@@ -2,6 +2,8 @@ import User from "./userModel.js"
 import mongoose from "mongoose"
 import { sendResponse } from "../../util/sendResponse.js";
 import { newToken } from '../../util/jwt.js'
+import cloudinary from "../../util/cloudinary.js";
+import { mediaDel } from "../../util/mediaDel.js";
 
 //Register a User
 export const registerUser = async (req, res, next) => {
@@ -45,8 +47,10 @@ export const loginUser = async (req, res, next) => {
     if (!isPasswordMatched) {
       return sendResponse(400, false, 'password incorrect', res);
     }
-    const result = user
-    const token = newToken(user)
+
+    const userData = await User.findOne({ email })
+    const result = userData
+    const token = newToken(result)
     const options = {
       expires: new Date(
         Date.now() + 20 * 24 * 60 * 60 * 1000
@@ -65,7 +69,7 @@ export const loginUser = async (req, res, next) => {
 //USER NAME EXIST
 export const userNameExist = async (req, res, next) => {
   try {
-    const { userName} = req.body;
+    const { userName } = req.body;
 
     const exist = await User.findOne({ userName: userName }).countDocuments();
     if (exist) {
@@ -307,6 +311,7 @@ export const getSingleUser = async (req, res, next) => {
 //Update user
 export const updateUser = async (req, res, next) => {
   try {
+
     const { userName, email, phone, city } = req.body
 
     const newUserData = {
@@ -314,12 +319,24 @@ export const updateUser = async (req, res, next) => {
       email: email,
       phone: phone,
       city: city
-    };
+    }
+
+    if (req.file) {
+      await cloudinary.v2.uploader.upload(req.file.path, {
+        folder: "user/",
+      }).then((result) => {
+        newUserData.image = {
+          public_id: result.public_id,
+          url: result.url,
+        }
+        mediaDel()
+      })
+    }
     await User.findByIdAndUpdate(req.params.id, newUserData);
     sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
     if (e.code) {
-      return sendResponse(400, false, `${Object.keys(e.keyValue)} Already in use`, res)
+      return sendResponse(400, false, `${Object.keys(e.keyValue)} already in use`, res)
     }
     sendResponse(400, false, e, res)
   }

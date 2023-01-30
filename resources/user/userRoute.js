@@ -1,5 +1,7 @@
 import { Router } from "express";
 const router = Router();
+import multer from "multer";
+const upload = multer({ dest: 'uploads/' })
 
 import {
   registerUser,
@@ -33,7 +35,7 @@ router.route("/user/create-user").post(addUser);
 
 router.route("/user/get-single-user/:id").get(getSingleUser);
 
-router.route("/user/update-user/:id").put(vUpdateUser, updateUser);
+router.route("/user/update-user/:id").put(vUpdateUser, upload.single('image'), updateUser);
 
 router.route("/user/update-user-status").put(vUpdateStatus, updateUserStatus);
 
