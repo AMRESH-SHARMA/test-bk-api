@@ -6,29 +6,25 @@ import { newToken } from '../../util/jwt.js'
 //Register a User
 export const registerUser = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { userName, email, password } = req.body;
 
     const exist = await User.findOne({ email: email }).countDocuments();
     if (exist) {
-      return sendResponse(409, false, 'User already exist', res)
+      return sendResponse(400, false, 'email already in use', res)
     }
 
     const user = await User.create({
-      // name,
+      userName,
       email,
       password,
-      // phone,
-      // avatar: {
-      //   public_id: myCloud.public_id,
-      //   url: myCloud.secure_url,
-      // },
     });
     sendResponse(201, true, user, res)
   } catch (e) {
+    console.log(e);
     if (e.code) {
-      return sendResponse(400, false, `${Object.keys(e.keyValue)} Already in use`, res)
+      return sendResponse(400, false, `${Object.keys(e.keyValue)} already in use`, res)
     }
-    sendResponse(400, false, e, res)
+    sendResponse(400, false, e.message, res)
   }
 };
 
@@ -39,12 +35,11 @@ export const loginUser = async (req, res, next) => {
   try {
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-      return sendResponse(400, false, 'Invalid Email', res);
+      return sendResponse(400, false, 'user not found with this email', res);
     }
-
     const isPasswordMatched = await user.comparePassword(password);
     if (!isPasswordMatched) {
-      return sendResponse(400, false, 'Invalid Password', res);
+      return sendResponse(400, false, 'password incorrect', res);
     }
     const result = user
     const token = newToken(user)

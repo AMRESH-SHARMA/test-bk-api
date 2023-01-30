@@ -17,13 +17,13 @@ import {
   // createUser,
 } from "./adminController.js"
 import { isAuthenticatedUser } from "../../util/auth.js"
-import { vAccessToken, vLogin } from "../../util/validators.js"
+import { vAccessToken, vAdminLogin } from "../../util/validators.js"
 import multer from "multer";
 const upload = multer({ dest: 'uploads/' })
 
 router.route("/admin/register").post(register);
 
-router.route("/admin/login").post(vLogin, login);
+router.route("/admin/login").post(vAdminLogin, login);
 
 router.route("/admin/change-password").post(isAuthenticatedUser, updatePassword);
 

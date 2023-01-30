@@ -5,6 +5,10 @@ import crypto from "crypto"
 const userSchema = new mongoose.Schema({
   userName: {
     type: String,
+    unique: true,
+  },
+  name: {
+    type: String,
   },
   email: {
     type: String,
@@ -22,14 +26,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     select: false,
   },
-  // avatar: {
-  //   public_id: {
-  //     type: String,
-  //   },
-  //   url: {
-  //     type: String,
-  //   },
-  // },
+  image: {
+    public_id: {
+      type: String,
+    },
+    url: {
+      type: String,
+    },
+  },
   role: {
     type: String,
   },
@@ -52,16 +56,14 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Password bcrypt before saving into db
-// userSchema.pre("save", async function (next) {
-//   try {
-//     const hash = await bcrypt.hash(this.password, 8);
-//     this.password = hash;
-//     next();
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
+userSchema.pre("save", async function (next) {
+  try {
+    this.password = bcrypt.hash(this.password, 8);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Compare Password
 userSchema.methods.comparePassword = async function (password) {

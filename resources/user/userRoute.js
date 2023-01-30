@@ -16,11 +16,11 @@ import {
   addUser,
 } from "./userController.js"
 import { isAuthenticatedUser } from "../../util/auth.js"
-import { vAccessToken, vLogin, vAddUser, vUpdateUser, vUpdateStatus } from "../../util/validators.js"
+import { vUserRegister, vUserLogin, vAccessToken, vAddUser, vUpdateUser, vUpdateStatus } from "../../util/validators.js"
 
-// router.route("/user/register").post(vLogin, registerUser);
+router.route("/user/register").post(vUserRegister, registerUser);
 
-router.route("/user/login").post(vLogin, loginUser);
+router.route("/user/login").post(vUserLogin, loginUser);
 
 // router.route("/user/logout").delete(logout);
 

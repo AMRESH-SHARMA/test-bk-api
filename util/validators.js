@@ -1,15 +1,66 @@
 import { check, header, query, param, validationResult } from 'express-validator'
 
-export const vLogin = [
+export const vUserRegister = [
+  check('userName')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('username can not be empty')
+    .bail(),
   check('email')
     .trim()
     .escape()
     .notEmpty()
-    .withMessage('Username can not be empty!')
+    .withMessage('email can not be empty')
+    .bail(),
+  check('password')
+    .trim()
+    .notEmpty()
+    .withMessage('password can not be empty')
+    .bail(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(422).json({ success: false, msg: errors.mapped() });
+    next();
+  },
+];
+
+export const vUserLogin = [
+  check('email')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('email can not be empty')
+    .bail()
+    .isEmail()
+    .withMessage('invalid email')
     .bail(),
   check('password')
     .notEmpty()
-    .withMessage('Password can not be empty!')
+    .withMessage('password can not be empty')
+    .bail(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(422).json({ success: false, msg: errors.mapped() });
+    next();
+  },
+];
+
+export const vAdminLogin = [
+  check('email')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('email can not be empty')
+    .bail()
+    .isEmail()
+    .withMessage('invalid email')
+    .bail(),
+  check('password')
+    .notEmpty()
+    .withMessage('password can not be empty')
     .bail(),
   (req, res, next) => {
     const errors = validationResult(req);
