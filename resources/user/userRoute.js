@@ -21,11 +21,11 @@ import {
 import { isAuthenticatedUser } from "../../util/auth.js"
 import { vUserRegister, vUserLogin, vUsernameUnique, vAccessToken, vAddUser, vUpdateUser, vUpdateStatus } from "../../util/validators.js"
 
-router.route("/user/register").post(vUserRegister, upload.single('image'), registerUser);
+router.route("/user/register").post(upload.single('image'), registerUser);
 
-router.route("/user/username-unique").post(vUsernameUnique, userNameExist);
+router.route("/user/username-unique").post(userNameExist);
 
-router.route("/user/login").post(vUserLogin, loginUser);
+router.route("/user/login").post(loginUser);
 
 // router.route("/user/logout").delete(logout);
 
