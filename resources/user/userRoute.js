@@ -26,7 +26,7 @@ import { vAccessToken, vLogin, vAddUser, vUpdateUser, vUpdateStatus } from "../.
 
 router.route("/user/get-users").get(getAllUser);
 
-router.route("/user/create-user").post(vAddUser, addUser);
+router.route("/user/create-user").post(addUser);
 
 router.route("/user/get-single-user/:id").get(getSingleUser);
 
