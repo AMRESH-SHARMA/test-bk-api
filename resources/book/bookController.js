@@ -8,8 +8,8 @@ import { mediaDel } from "../../util/mediaDel.js";
 export const getAllBooks = async (req, res, next) => {
   try {
     const { skip, limit } = req.query
-    const totalDocs = await Book.countDocuments();
-    const result = await Book.find().skip(skip).limit(limit)
+    const totalDocs = await Book.countDocuments()
+    const result = await Book.find().populate('language').populate('genre').populate('uploadedBy').skip(skip).limit(limit)
     sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);

@@ -18,8 +18,8 @@ export const updateLogos = async (req, res, next) => {
   try {
     const uniqueId = req.params.id;
     const { websiteHeader, websiteFooter, websiteAdminHeader } = req.files
-console.log(req.files);
-console.log(req.file);
+    // console.log(req.files);
+    // console.log(req.file);
     const payloadObj = {}
 
     if (websiteHeader) {
