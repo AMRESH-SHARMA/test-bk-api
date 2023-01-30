@@ -4,6 +4,7 @@ const router = Router();
 import {
   registerUser,
   loginUser,
+  userNameExist,
   logout,
   // forgotPassword,
   // resetPassword,
@@ -19,6 +20,8 @@ import { isAuthenticatedUser } from "../../util/auth.js"
 import { vUserRegister, vUserLogin, vAccessToken, vAddUser, vUpdateUser, vUpdateStatus } from "../../util/validators.js"
 
 router.route("/user/register").post(vUserRegister, registerUser);
+
+router.route("/user/username-unique").post(userNameExist);
 
 router.route("/user/login").post(vUserLogin, loginUser);
 

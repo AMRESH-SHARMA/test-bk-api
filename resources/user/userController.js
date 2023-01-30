@@ -62,6 +62,22 @@ export const loginUser = async (req, res, next) => {
 };
 
 
+//USER NAME EXIST
+export const userNameExist = async (req, res, next) => {
+  try {
+    const { userName} = req.body;
+
+    const exist = await User.findOne({ userName: userName }).countDocuments();
+    if (exist) {
+      return sendResponse(400, false, 'username already in use', res)
+    }
+
+    sendResponse(200, true, 'username is unique', res)
+  } catch (e) {
+    sendResponse(400, false, e.message, res)
+  }
+};
+
 //Logout User
 export const logout = async (req, res, next) => {
   try {
