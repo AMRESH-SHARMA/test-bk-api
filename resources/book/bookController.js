@@ -152,6 +152,7 @@ export const deleteSingleBook = async (req, res, next) => {
 
     sendResponse(201, true, 'Book deleted', res)
   } catch (e) {
+    console.log(e);
     sendResponse(400, false, e.message, res)
   }
 }

@@ -2,6 +2,7 @@ import User from "./userModel.js"
 import mongoose from "mongoose"
 import { sendResponse } from "../../util/sendResponse.js";
 import { newToken } from '../../util/jwt.js'
+import { bcryptPassword } from '../../util/bcryptPassword.js'
 import cloudinary from "../../util/cloudinary.js";
 import { mediaDel } from "../../util/mediaDel.js";
 
@@ -19,10 +20,16 @@ export const registerUser = async (req, res, next) => {
       return sendResponse(400, false, 'email already in use', res)
     }
 
+    const hashedPassword = await bcryptPassword(password)
+    // const hashedPassword = await User.hashPassword(password)
+    console.log(hashedPassword);
+
+
+
     let newUserData = {
       userName,
       email,
-      password,
+      password: hashedPassword,
     }
 
     if (req.file) {
@@ -274,10 +281,17 @@ export const logout = async (req, res, next) => {
 export const addUser = async (req, res, next) => {
   try {
     const { uniqueId, userName, email, phone, city } = req.body;
-    const exist = await User.findOne({ email: email }).countDocuments();
-    if (exist) {
-      return sendResponse(409, false, 'User already exist', res)
+
+    const exist1 = await User.findOne({ userName: userName }).countDocuments();
+    if (exist1) {
+      return sendResponse(400, false, 'username already in use', res)
     }
+
+    const exist2 = await User.findOne({ email: email }).countDocuments();
+    if (exist2) {
+      return sendResponse(409, false, 'email already in use', res)
+    }
+
     const user = await User.create({
       _id: uniqueId,
       userName,
@@ -288,10 +302,11 @@ export const addUser = async (req, res, next) => {
     });
     sendResponse(201, true, user, res)
   } catch (e) {
+    console.log(e);
     if (e.code) {
-      return sendResponse(400, false, `${Object.keys(e.keyValue)} Already in use`, res)
+      return sendResponse(400, false, `${Object.keys(e.keyValue)} already in use`, res)
     }
-    sendResponse(400, false, e, res)
+    sendResponse(400, false, e.message, res)
   }
 };
 
@@ -300,8 +315,10 @@ export const getAllUser = async (req, res, next) => {
   try {
     const { skip, limit } = req.query
     const totalDocs = await User.countDocuments();
-    const result = await User.find().all('role', ['user']).skip(skip).limit(limit)
-    sendResponse(200, true, { totalDocs, result }, res)
+    if (totalDocs) {
+      const result = await User.find().all('role', ['user']).skip(skip).limit(limit)
+      sendResponse(200, true, { totalDocs, result }, res)
+    } else sendResponse(400, false, 'users not found', res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
