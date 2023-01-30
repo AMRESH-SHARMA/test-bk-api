@@ -335,6 +335,21 @@ export const getSingleUser = async (req, res, next) => {
   }
 };
 
+//Get Books Uploaded By Single User
+export const getBooksUploadedBySingleUser = async (req, res, next) => {
+  try {
+    console.log(req.authTokenData);
+    const user = await User.findById(req.authTokenData.id).select('booksAdded').populate('booksAdded')
+    if (!user) {
+      return sendResponse(400, false, `User does not exist with Id: ${req.params.id}`, res)
+    }
+    sendResponse(200, true, user, res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
 //Update user
 export const updateUser = async (req, res, next) => {
   try {

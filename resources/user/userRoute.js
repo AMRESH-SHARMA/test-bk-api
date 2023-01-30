@@ -15,6 +15,7 @@ import {
   updateUserStatus,
   updateUser,
   getSingleUser,
+  getBooksUploadedBySingleUser,
   getAllUser,
   addUser,
 } from "./userController.js"
@@ -32,6 +33,8 @@ router.route("/user/get-users").get(getAllUser);
 router.route("/user/create-user").post(vAddUser, addUser);
 
 router.route("/user/get-single-user/:id").get(vParamId, getSingleUser);
+
+router.route("/user/get-books-uploadedby-single-user").get(vAccessToken, isAuthenticatedUser, getBooksUploadedBySingleUser);
 
 router.route("/user/update-user/:id").put(vParamId, upload.single('image'), updateUser);
 
