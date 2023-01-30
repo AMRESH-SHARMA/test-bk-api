@@ -8,8 +8,12 @@ export const registerUser = async (req, res, next) => {
   try {
     const { userName, email, password } = req.body;
 
-    const exist = await User.findOne({ email: email }).countDocuments();
-    if (exist) {
+    const exist1 = await User.findOne({ userName: userName }).countDocuments();
+    if (exist1) {
+      return sendResponse(400, false, 'username already in use', res)
+    }
+    const exist2 = await User.findOne({ email: email }).countDocuments();
+    if (exist2) {
       return sendResponse(400, false, 'email already in use', res)
     }
 
