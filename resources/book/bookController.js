@@ -91,7 +91,9 @@ export const addBook = async (req, res, next) => {
     user.booksAdded.push(newBook._id)
     await user.save();
 
-    sendResponse(201, true, newBook, res)
+    const result =  await Book.findById(uniqueId).populate('genre language')
+    console.log(result);
+    sendResponse(201, true, result, res)
 
   } catch (e) {
     console.log(e);
