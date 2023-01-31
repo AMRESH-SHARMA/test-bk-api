@@ -34,7 +34,7 @@ router.route("/user/create-user").post(vAddUser, addUser);
 
 router.route("/user/get-single-user/:id").get(vParamId, getSingleUser);
 
-router.route("/user/get-books-uploadedby-single-user").get(vAccessToken, isAuthenticated, getBooksUploadedBySingleUser);
+router.route("/user/get-books-uploadedby-single-user/:id").get(vParamId,isAuthenticated, getBooksUploadedBySingleUser);
 
 router.route("/user/update-user/:id").put(vParamId, upload.single('image'), updateUser);
 

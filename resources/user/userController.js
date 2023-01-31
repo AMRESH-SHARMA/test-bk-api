@@ -338,8 +338,12 @@ export const getSingleUser = async (req, res, next) => {
 //Get Books Uploaded By Single User
 export const getBooksUploadedBySingleUser = async (req, res, next) => {
   try {
-    console.log(req.authTokenData);
-    const user = await User.findById(req.authTokenData.id).select('booksAdded').populate('booksAdded')
+
+    const user = await User.findById(req.params.id).select('booksAdded').populate({
+      path: 'booksAdded',
+      populate: { path: 'genre language' }
+    });
+
     if (!user) {
       return sendResponse(400, false, `User does not exist with Id: ${req.params.id}`, res)
     }
