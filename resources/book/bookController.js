@@ -17,6 +17,36 @@ export const getAllBooks = async (req, res, next) => {
   }
 };
 
+export const getAllBooksByProperty = async (req, res, next) => {
+  try {
+    const { language, genre, skip, limit } = req.query
+
+    if (genre && language) {
+      const totalDocs = await Book.find({ genre, language }).countDocuments()
+      const result = await Book.find({ genre, language }).populate('language').populate('genre').skip(skip).limit(limit)
+      return sendResponse(200, true, { totalDocs, result }, res)
+    }
+    if (genre) {
+      const totalDocs = await Book.find({ genre }).countDocuments()
+      const result = await Book.find({ genre }).populate('language').populate('genre').skip(skip).limit(limit)
+      return sendResponse(200, true, { totalDocs, result }, res)
+    }
+    if (language) {
+      const totalDocs = await Book.find({ language }).countDocuments()
+      const result = await Book.find({ language }).populate('language').populate('genre').skip(skip).limit(limit)
+      return sendResponse(200, true, { totalDocs, result }, res)
+    }
+
+    const totalDocs = await Book.countDocuments()
+    const result = await Book.find().populate('language').populate('genre').populate('uploadedBy').skip(skip).limit(limit)
+    sendResponse(200, true, { totalDocs, result }, res)
+
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
 export const getSingleBook = async (req, res, next) => {
   try {
     const book = await Book.findById(req.params.id).populate('language').populate('genre').populate('uploadedBy');
@@ -91,7 +121,7 @@ export const addBook = async (req, res, next) => {
     user.booksAdded.push(newBook._id)
     await user.save();
 
-    const result =  await Book.findById(uniqueId).populate('genre language')
+    const result = await Book.findById(uniqueId).populate('genre language')
     console.log(result);
     sendResponse(201, true, result, res)
 
