@@ -312,7 +312,7 @@ export const getAllUser = async (req, res, next) => {
     const { skip, limit } = req.query
     const totalDocs = await User.countDocuments();
     if (totalDocs) {
-      const result = await User.find().sort({createdAt: -1}).all('role', ['user']).skip(skip).limit(limit)
+      const result = await User.find().sort({ createdAt: -1 }).all('role', ['user']).skip(skip).limit(limit)
       sendResponse(200, true, { totalDocs, result }, res)
     } else sendResponse(400, false, 'users not found', res)
   } catch (e) {
@@ -324,9 +324,11 @@ export const getAllUser = async (req, res, next) => {
 //Get single user
 export const getSingleUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id).populate('booksAdded')
+    const userId = req.authTokenData.id;
+
+    const user = await User.findById(userId).populate('booksAdded')
     if (!user) {
-      return sendResponse(400, false, `User does not exist with Id: ${req.params.id}`, res)
+      return sendResponse(400, false, `User does not exist with Id: ${userId}`, res)
     }
     sendResponse(200, true, user, res)
   } catch (e) {
