@@ -7,7 +7,7 @@ export const getAllgenres = async (req, res, next) => {
   try {
     const { skip, limit } = req.query
     const totalDocs = await Genre.countDocuments();
-    const result = await Genre.find().skip(skip).limit(limit)
+    const result = await Genre.find().sort({genre: 1}).skip(skip).limit(limit)
     sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);

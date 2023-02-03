@@ -18,9 +18,10 @@ import {
   getBooksUploadedBySingleUser,
   getAllUser,
   addUser,
+  addBookToBookmark,
 } from "./userController.js"
 import { isAuthenticated } from "../../util/auth.js"
-import { vUserRegister, vUserLogin, vUsernameUnique, vAccessToken, vAddUser, vParamId, vUpdateStatus } from "../../util/validators.js"
+import { vUserRegister, vUserLogin, vUsernameUnique, vBookmark, vAccessToken, vAddUser, vParamId, vUpdateStatus } from "../../util/validators.js"
 
 router.route("/user/register").post(vUserRegister, upload.single('image'), registerUser);
 
@@ -57,6 +58,8 @@ router.route("/user/update-user-status").put(vUpdateStatus, updateUserStatus);
 // router.route("/user/password/update").put(isAuthenticatedUser, updatePassword);
 
 // router.route("/user/update-profile").put(vAccessToken, isAuthenticatedUser, updateProfile);
+
+router.route("/user/bookmark").post(vBookmark, addBookToBookmark);
 
 
 export default router;

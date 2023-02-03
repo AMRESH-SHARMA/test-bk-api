@@ -2,7 +2,10 @@ import mongoose from "mongoose"
 const languageSchema = new mongoose.Schema({
   language: {
     type: String,
+    trim: true,
+    required: true,
     unique: true,
+    maxLength: 30,
   },
 }, { timestamps: true });
 

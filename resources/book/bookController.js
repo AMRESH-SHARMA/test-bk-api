@@ -5,40 +5,40 @@ import cloudinary from "../../util/cloudinary.js";
 import { sendResponse } from "../../util/sendResponse.js";
 import { mediaDel } from "../../util/mediaDel.js";
 
-export const getAllBooks = async (req, res, next) => {
-  try {
-    const { skip, limit } = req.query
-    const totalDocs = await Book.countDocuments()
-    const result = await Book.find().populate('language').populate('genre').populate('uploadedBy').skip(skip).limit(limit)
-    sendResponse(200, true, { totalDocs, result }, res)
-  } catch (e) {
-    console.log(e);
-    sendResponse(400, false, e.message, res)
-  }
-};
+// export const getAllBooks = async (req, res, next) => {
+//   try {
+//     const { skip, limit } = req.query
+//     const totalDocs = await Book.countDocuments()
+//     const result = await Book.find().sort({createdAt: -1}).populate('language').populate('genre').populate('uploadedBy').skip(skip).limit(limit)
+//     sendResponse(200, true, { totalDocs, result }, res)
+//   } catch (e) {
+//     console.log(e);
+//     sendResponse(400, false, e.message, res)
+//   }
+// };
 
-export const getAllBooksByProperty = async (req, res, next) => {
+export const getAllBooks = async (req, res, next) => {
   try {
     const { language, genre, skip, limit } = req.query
 
     if (genre && language) {
       const totalDocs = await Book.find({ genre, language }).countDocuments()
-      const result = await Book.find({ genre, language }).populate('language').populate('genre').skip(skip).limit(limit)
+      const result = await Book.find({ genre, language }).sort({createdAt: -1}).populate('language').populate('genre').skip(skip).limit(limit)
       return sendResponse(200, true, { totalDocs, result }, res)
     }
     if (genre) {
       const totalDocs = await Book.find({ genre }).countDocuments()
-      const result = await Book.find({ genre }).populate('language').populate('genre').skip(skip).limit(limit)
+      const result = await Book.find({ genre }).sort({createdAt: -1}).populate('language').populate('genre').skip(skip).limit(limit)
       return sendResponse(200, true, { totalDocs, result }, res)
     }
     if (language) {
       const totalDocs = await Book.find({ language }).countDocuments()
-      const result = await Book.find({ language }).populate('language').populate('genre').skip(skip).limit(limit)
+      const result = await Book.find({ language }).sort({createdAt: -1}).populate('language').populate('genre').skip(skip).limit(limit)
       return sendResponse(200, true, { totalDocs, result }, res)
     }
 
     const totalDocs = await Book.countDocuments()
-    const result = await Book.find().populate('language').populate('genre').populate('uploadedBy').skip(skip).limit(limit)
+    const result = await Book.find().sort({createdAt: -1}).populate('language').populate('genre').skip(skip).limit(limit)
     sendResponse(200, true, { totalDocs, result }, res)
 
   } catch (e) {
@@ -49,7 +49,7 @@ export const getAllBooksByProperty = async (req, res, next) => {
 
 export const getSingleBook = async (req, res, next) => {
   try {
-    const book = await Book.findById(req.params.id).populate('language').populate('genre').populate('uploadedBy');
+    const book = await Book.findById(req.params.id).populate('language').populate('genre');
     if (!book) {
       return sendResponse(400, false, `Book does not exist with Id: ${req.params.id}`, res)
     }
@@ -62,7 +62,7 @@ export const getSingleBook = async (req, res, next) => {
 
 export const addBook = async (req, res, next) => {
   try {
-    const { uniqueId, bookName, genre, language, description, rentPerDay, uploadedBy } = req.body;
+    const { uniqueId, bookName, genre, language, author, description, rentPerDay, uploadedBy } = req.body;
     const { image1, image2, image3, image4 } = req.files
 
     var payloadObj = {
@@ -70,6 +70,7 @@ export const addBook = async (req, res, next) => {
       bookName,
       genre,
       language,
+      author,
       description,
       rentPerDay,
       uploadedBy,
@@ -122,7 +123,7 @@ export const addBook = async (req, res, next) => {
     await user.save();
 
     const result = await Book.findById(uniqueId).populate('genre language')
-    console.log(result);
+
     sendResponse(201, true, result, res)
 
   } catch (e) {
@@ -134,12 +135,13 @@ export const addBook = async (req, res, next) => {
 
 export const updateBook = async (req, res, next) => {
   try {
-    const { bookName, genre, language, description, rentPerDay } = req.body;
+    const { bookName, genre, language, author, description, rentPerDay } = req.body;
 
     const newBookData = {
       bookName,
       genre,
       language,
+      author,
       description,
       rentPerDay,
     };

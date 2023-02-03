@@ -2,7 +2,10 @@ import mongoose from "mongoose"
 const genreSchema = new mongoose.Schema({
   genre: {
     type: String,
+    trim: true,
+    required: true,
     unique: true,
+    maxLength: 20,
   },
   image:
   {

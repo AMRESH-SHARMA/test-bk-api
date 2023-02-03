@@ -2,7 +2,10 @@ import mongoose from "mongoose"
 const stateSchema = new mongoose.Schema({
   state: {
     type: String,
+    trim: true,
+    required: true,
     unique: true,
+    maxLength: 20,
   },
 }, { timestamps: true });
 

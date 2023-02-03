@@ -5,17 +5,26 @@ import crypto from "crypto"
 const adminSchema = new mongoose.Schema({
   name: {
     type: String,
+    trim: true,
+    required: true,
+    maxLength: 50,
   },
   email: {
     type: String,
+    required: true,
+    trim: true,
     lowercase: true,
     unique: true,
+    maxLength: 100,
   },
   city: {
     type: String,
+    trim: true,
   },
   password: {
     type: String,
+    required: true,
+    trim: true,
     select: false,
   },
   image:

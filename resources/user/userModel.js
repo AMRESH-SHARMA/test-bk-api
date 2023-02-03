@@ -50,6 +50,12 @@ const userSchema = new mongoose.Schema({
       ref: 'Book',
     }
   ],
+  booksMarked: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Book',
+    }
+  ],
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 }, { timestamps: true });

@@ -3,7 +3,6 @@ const router = Router();
 
 import {
   getAllBooks,
-  getAllBooksByProperty,
   getSingleBook,
   addBook,
   updateBook,
@@ -23,7 +22,7 @@ const cpUpload = upload.fields([
 
 router.route("/book/get-books").get(getAllBooks);
 
-router.route("/book/get-books-byproperty").get(getAllBooksByProperty);
+// router.route("/book/get-books-byproperty").get(getAllBooksByProperty);
 
 router.route("/book/get-single-book/:id").get(getSingleBook);
 

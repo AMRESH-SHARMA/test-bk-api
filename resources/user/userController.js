@@ -312,7 +312,7 @@ export const getAllUser = async (req, res, next) => {
     const { skip, limit } = req.query
     const totalDocs = await User.countDocuments();
     if (totalDocs) {
-      const result = await User.find().all('role', ['user']).skip(skip).limit(limit)
+      const result = await User.find().sort({createdAt: -1}).all('role', ['user']).skip(skip).limit(limit)
       sendResponse(200, true, { totalDocs, result }, res)
     } else sendResponse(400, false, 'users not found', res)
   } catch (e) {
@@ -397,6 +397,23 @@ export const updateUserStatus = async (req, res, next) => {
     }
     sendResponse(200, true, 'User Status Updated', res)
   } catch (e) {
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+// BOOKMARK
+export const addBookToBookmark = async (req, res, next) => {
+  try {
+    const { bookId, userId } = req.body;
+
+    const user = await User.findById(userId)
+    user.booksMarked.push(bookId)
+    await user.save();
+
+    sendResponse(201, true, 'book marked', res)
+
+  } catch (e) {
+    console.log(e);
     sendResponse(400, false, e.message, res)
   }
 };

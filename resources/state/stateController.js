@@ -5,7 +5,7 @@ export const getAllStates = async (req, res, next) => {
   try {
     const { skip, limit } = req.query
     const totalDocs = await State.countDocuments();
-    const result = await State.find().populate('state').skip(skip).limit(limit)
+    const result = await State.find().sort({state: 1}).populate('state').skip(skip).limit(limit)
     sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);

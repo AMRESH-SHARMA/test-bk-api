@@ -5,7 +5,7 @@ export const getAlllanguages = async (req, res, next) => {
   try {
     const { skip, limit } = req.query
     const totalDocs = await Language.countDocuments();
-    const result = await Language.find().skip(skip).limit(limit)
+    const result = await Language.find().sort({language: 1}).skip(skip).limit(limit)
     sendResponse(200, true, {totalDocs,result}, res)
   } catch (e) {
     console.log(e);

@@ -5,7 +5,7 @@ export const getAllCities = async (req, res, next) => {
   try {
     const { skip, limit } = req.query
     const totalDocs = await City.countDocuments();
-    const result = await City.find().populate('state').skip(skip).limit(limit)
+    const result = await City.find().sort({city: 1}).populate('state').skip(skip).limit(limit)
     sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);

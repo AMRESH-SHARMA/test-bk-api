@@ -2,6 +2,10 @@ import mongoose from "mongoose"
 const bookSchema = new mongoose.Schema({
   bookName: {
     type: String,
+    trim: true,
+    required: true,
+    unique: true,
+    maxLength: 50,
   },
   genre: {
     type: mongoose.Schema.Types.ObjectId,
@@ -11,8 +15,18 @@ const bookSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Language",
   },
+  author: {
+    type: String,
+    trim: true,
+    required: true,
+    unique: true,
+  },
   description: {
     type: String,
+    trim: true,
+    required: true,
+    unique: true,
+    maxLength: 200,
   },
   rentPerDay: {
     type: Number,

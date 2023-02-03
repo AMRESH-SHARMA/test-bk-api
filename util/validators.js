@@ -138,6 +138,27 @@ export const vAddUser = [
   },
 ];
 
+export const vBookmark = [
+  body('userId')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('userId can not be empty')
+    .bail(),
+  body('bookId')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('bookId can not be empty')
+    .bail(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(422).json({ success: false, msg: errors.mapped() });
+    next();
+  },
+];
+
 export const vParamId = [
   param('id')
     .exists()

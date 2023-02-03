@@ -2,6 +2,9 @@ import mongoose from "mongoose"
 const citySchema = new mongoose.Schema({
   city: {
     type: String,
+    trim: true,
+    required: true,
+    maxLength: 20,
     unique: true,
   },
   state: {
