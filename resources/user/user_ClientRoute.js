@@ -22,9 +22,9 @@ import { vUserRegister, vUserLogin, vUsernameUnique, vBookmark, vAccessToken } f
 
 router.route("/user/register").post(vUserRegister, upload.single('image'), registerUser);
 
-router.route("/user/username-unique").post(vAccessToken, isAuthenticated, vUsernameUnique, userNameExist);
-
 router.route("/user/login").post(vUserLogin, loginUser);
+
+router.route("/user/username-unique").post(vAccessToken, isAuthenticated, vUsernameUnique, userNameExist);
 
 router.route("/user/get-single-user").get(vAccessToken, isAuthenticated, getSingleUser);
 

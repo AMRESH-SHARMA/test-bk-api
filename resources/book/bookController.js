@@ -5,18 +5,6 @@ import cloudinary from "../../util/cloudinary.js";
 import { sendResponse } from "../../util/sendResponse.js";
 import { mediaDel } from "../../util/mediaDel.js";
 
-// export const getAllBooks = async (req, res, next) => {
-//   try {
-//     const { skip, limit } = req.query
-//     const totalDocs = await Book.countDocuments()
-//     const result = await Book.find().sort({createdAt: -1}).populate('language').populate('genre').populate('uploadedBy').skip(skip).limit(limit)
-//     sendResponse(200, true, { totalDocs, result }, res)
-//   } catch (e) {
-//     console.log(e);
-//     sendResponse(400, false, e.message, res)
-//   }
-// };
-
 export const getAllBooks = async (req, res, next) => {
   try {
     const { language, genre, skip, limit } = req.query
@@ -41,6 +29,49 @@ export const getAllBooks = async (req, res, next) => {
     const result = await Book.find().sort({createdAt: -1}).populate('language').populate('genre').skip(skip).limit(limit)
     sendResponse(200, true, { totalDocs, result }, res)
 
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+export const getAllBooksApproved = async (req, res, next) => {
+  try {
+    const { language, genre, skip, limit } = req.query
+
+    if (genre && language) {
+      const totalDocs = await Book.find({ genre, language }).where('approved').equals(true).countDocuments()
+      const result = await Book.find({ genre, language }).where('approved').equals(true).sort({createdAt: -1}).populate('language').populate('genre').skip(skip).limit(limit)
+      return sendResponse(200, true, { totalDocs, result }, res)
+    }
+    if (genre) {
+      const totalDocs = await Book.find({ genre }).where('approved').equals(true).countDocuments()
+      const result = await Book.find({ genre }).where('approved').equals(true).sort({createdAt: -1}).populate('language').populate('genre').skip(skip).limit(limit)
+      return sendResponse(200, true, { totalDocs, result }, res)
+    }
+    if (language) {
+      const totalDocs = await Book.find({ language }).where('approved').equals(true).countDocuments()
+      const result = await Book.find({ language }).where('approved').equals(true).sort({createdAt: -1}).populate('language').populate('genre').skip(skip).limit(limit)
+      return sendResponse(200, true, { totalDocs, result }, res)
+    }
+
+    const totalDocs = await Book.countDocuments()
+    const result = await Book.find().sort({createdAt: -1}).where('approved').equals(true).populate('language').populate('genre').skip(skip).limit(limit)
+    sendResponse(200, true, { totalDocs, result }, res)
+
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+export const getSingleBookApproved = async (req, res, next) => {
+  try {
+    const book = await Book.findById(req.params.id).where('approved').equals(true).populate('language').populate('genre');
+    if (!book) {
+      return sendResponse(400, false, `Book does not exist with Id: ${req.params.id}`, res)
+    }
+    sendResponse(200, true, book, res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
@@ -156,6 +187,30 @@ export const updateBook = async (req, res, next) => {
   }
 };
 
+export const updateBookApproved = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+    const { bookName, genre, language, author, description, rentPerDay } = req.body;
+
+    const newBookData = {
+      bookName,
+      genre,
+      language,
+      author,
+      description,
+      rentPerDay,
+    };
+
+    await Book.findByIdAndUpdate(userId, newBookData).where('approved').equals(true);
+    sendResponse(200, true, 'Updated Successfully', res)
+  } catch (e) {
+    if (e.code) {
+      return sendResponse(400, false, `${Object.keys(e.keyValue)} Already in use`, res)
+    }
+    sendResponse(400, false, e, res)
+  }
+};
+
 export const updateBookStatus = async (req, res, next) => {
   try {
     const TrueStatus = {
@@ -175,6 +230,22 @@ export const updateBookStatus = async (req, res, next) => {
     sendResponse(400, false, e.message, res)
   }
 };
+
+export const deleteSingleBookApproved = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+    await Book.deleteOne({ _id: req.params.id }).where('approved').equals(true)
+    const user = await User.findById(userId);
+    const index = user.booksAdded.indexOf(req.params._id);
+    user.booksAdded.splice(index, 1);
+    await user.save();
+
+    sendResponse(201, true, 'Book deleted', res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+}
 
 export const deleteSingleBook = async (req, res, next) => {
   try {

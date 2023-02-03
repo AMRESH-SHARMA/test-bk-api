@@ -29,13 +29,9 @@ app.get("/getUid", (req, res) => {
   }
 });
 
-//Auth Routes
-// app.post("/signup", userModel, signup);
-// app.put("/forgotPassword", forgotPassword);
-// app.put("/changePassword", userModel, adminProtect, changeUserPassword);
-// app.post("/admin-signup", userModel, employerSignUp);
-// app.post("/signin", userModel, signin);
-// app.post("/admin-signin", userModel, adminSignin);
+// ****************************************************************************************************
+
+// ADMIN API
 
 //Admin
 import adminRoute from "./resources/admin/adminRoute.js";
@@ -98,7 +94,11 @@ app.use("/", serviceFeesRoute);
 
 //User
 import user_ClientRoute from "./resources/user/user_ClientRoute.js";
-app.use("/", user_ClientRoute);
+app.use("/client", user_ClientRoute);
+
+//Book
+import book_ClientRoute from "./resources/book/book_ClientRoute.js";
+app.use("/client", book_ClientRoute);
 
 // Connect to the database before listening
 connectDatabase().then(() => {

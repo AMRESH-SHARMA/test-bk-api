@@ -56,7 +56,7 @@ export const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email }).where('approved').equals(true).select("+password");
     if (!user) {
       return sendResponse(400, false, 'user not found with this email', res);
     }
@@ -88,7 +88,7 @@ export const userNameExist = async (req, res, next) => {
   try {
     const { userName } = req.body;
 
-    const exist = await User.findOne({ userName: userName }).countDocuments();
+    const exist = await User.findOne({ userName: userName }).where('approved').equals(true).countDocuments();
     if (exist) {
       return sendResponse(400, false, 'username already in use', res)
     }
@@ -321,10 +321,10 @@ export const getAllUser = async (req, res, next) => {
   }
 };
 
-//Get single user
-export const getSingleUser = async (req, res, next) => {
+//Get single user by param
+export const getSingleUserByParam = async (req, res, next) => {
   try {
-    const userId = req.authTokenData.id;
+    const userId = req.params.id;
 
     const user = await User.findById(userId).populate('booksAdded')
     if (!user) {
@@ -337,8 +337,24 @@ export const getSingleUser = async (req, res, next) => {
   }
 };
 
-//Get Books Uploaded By Single User
-export const getBooksUploadedBySingleUser = async (req, res, next) => {
+//Get single user
+export const getSingleUser = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+
+    const user = await User.findById(userId).where('approved').equals(true).populate('booksAdded')
+    if (!user) {
+      return sendResponse(400, false, `User does not exist with Id: ${userId}`, res)
+    }
+    sendResponse(200, true, user, res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+//Get Books Uploaded By Single User By Param
+export const getBooksUploadedBySingleUserByParam = async (req, res, next) => {
   try {
 
     const userId = req.authTokenData.id;
@@ -355,6 +371,55 @@ export const getBooksUploadedBySingleUser = async (req, res, next) => {
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
+  }
+};
+
+//Get Books Uploaded By Single User
+export const getBooksUploadedBySingleUser = async (req, res, next) => {
+  try {
+
+    const userId = req.authTokenData.id;
+
+    const user = await User.findById(userId).where('approved').equals(true).select('booksAdded').populate({
+      path: 'booksAdded',
+      populate: { path: 'genre language' }
+    });
+
+    if (!user) {
+      return sendResponse(400, false, `User does not exist with Id: ${userId}`, res)
+    }
+    sendResponse(200, true, user, res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+//Update user by param
+export const updateUserByParam = async (req, res, next) => {
+  try {
+
+    const userId = req.params.id
+
+    if (req.file) {
+      await cloudinary.v2.uploader.upload(req.file.path, {
+        folder: "user/",
+      }).then((result) => {
+        req.body.image = {
+          public_id: result.public_id,
+          url: result.url,
+        }
+        mediaDel()
+      })
+    }
+
+    await User.findByIdAndUpdate(userId, req.body);
+    sendResponse(200, true, 'Updated Successfully', res)
+  } catch (e) {
+    if (e.code) {
+      return sendResponse(400, false, `${Object.keys(e.keyValue)} already in use`, res)
+    }
+    sendResponse(400, false, e, res)
   }
 };
 
