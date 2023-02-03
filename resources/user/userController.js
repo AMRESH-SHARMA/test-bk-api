@@ -341,13 +341,15 @@ export const getSingleUser = async (req, res, next) => {
 export const getBooksUploadedBySingleUser = async (req, res, next) => {
   try {
 
-    const user = await User.findById(req.params.id).select('booksAdded').populate({
+    const userId = req.authTokenData.id;
+
+    const user = await User.findById(userId).select('booksAdded').populate({
       path: 'booksAdded',
       populate: { path: 'genre language' }
     });
 
     if (!user) {
-      return sendResponse(400, false, `User does not exist with Id: ${req.params.id}`, res)
+      return sendResponse(400, false, `User does not exist with Id: ${userId}`, res)
     }
     sendResponse(200, true, user, res)
   } catch (e) {
@@ -359,6 +361,8 @@ export const getBooksUploadedBySingleUser = async (req, res, next) => {
 //Update user
 export const updateUser = async (req, res, next) => {
   try {
+
+    const userId = req.authTokenData.id;
 
     if (req.file) {
       await cloudinary.v2.uploader.upload(req.file.path, {
@@ -372,7 +376,7 @@ export const updateUser = async (req, res, next) => {
       })
     }
 
-    await User.findByIdAndUpdate(req.params.id, req.body);
+    await User.findByIdAndUpdate(userId, req.body);
     sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
     if (e.code) {
