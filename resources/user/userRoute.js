@@ -4,9 +4,6 @@ import multer from "multer";
 const upload = multer({ dest: 'uploads/' })
 
 import {
-  registerUser,
-  loginUser,
-  userNameExist,
   // logout,
   // forgotPassword,
   // resetPassword,
@@ -18,28 +15,21 @@ import {
   getBooksUploadedBySingleUser,
   getAllUser,
   addUser,
-  addBookToBookmark,
 } from "./userController.js"
 import { isAuthenticated } from "../../util/auth.js"
-import { vUserRegister, vUserLogin, vUsernameUnique, vBookmark, vAccessToken, vAddUser, vParamId, vUpdateStatus } from "../../util/validators.js"
+import { vAccessToken, vAddUser, vParamId, vUpdateStatus } from "../../util/validators.js"
 
-router.route("/user/register").post(vUserRegister, upload.single('image'), registerUser);
+router.route("/user/get-users").get(vAccessToken, isAuthenticated, getAllUser);
 
-router.route("/user/username-unique").post(vUsernameUnique, userNameExist);
+router.route("/user/create-user").post(vAccessToken, isAuthenticated, vAddUser, addUser);
 
-router.route("/user/login").post(vUserLogin, loginUser);
+router.route("/user/get-single-user/:id").get(vAccessToken, isAuthenticated, vParamId, getSingleUser);
 
-router.route("/user/get-users").get(getAllUser);
+router.route("/user/get-books-uploadedby-single-user/:id").get(vAccessToken, isAuthenticated, vParamId, getBooksUploadedBySingleUser);
 
-router.route("/user/create-user").post(vAddUser, addUser);
+router.route("/user/update-user/:id").put(vAccessToken, isAuthenticated, vParamId, upload.single('image'), updateUser);
 
-router.route("/user/get-single-user/:id").get(vParamId, getSingleUser);
-
-router.route("/user/get-books-uploadedby-single-user/:id").get(vParamId, getBooksUploadedBySingleUser);
-
-router.route("/user/update-user/:id").put(vParamId, upload.single('image'), updateUser);
-
-router.route("/user/update-user-status").put(vUpdateStatus, updateUserStatus);
+router.route("/user/update-user-status").put(vAccessToken, isAuthenticated, vUpdateStatus, updateUserStatus);
 
 // router.route("/user/forgot-password").post(forgotPassword);
 
@@ -58,8 +48,5 @@ router.route("/user/update-user-status").put(vUpdateStatus, updateUserStatus);
 // router.route("/user/password/update").put(isAuthenticatedUser, updatePassword);
 
 // router.route("/user/update-profile").put(vAccessToken, isAuthenticatedUser, updateProfile);
-
-router.route("/user/bookmark").post(vBookmark, addBookToBookmark);
-
 
 export default router;
