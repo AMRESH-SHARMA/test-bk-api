@@ -472,16 +472,36 @@ export const updateUserStatus = async (req, res, next) => {
   }
 };
 
-// BOOKMARK
+// ADD BOOK TO BOOKMARK
 export const addBookToBookmark = async (req, res, next) => {
   try {
-    const { bookId, userId } = req.body;
-
-    const user = await User.findById(userId)
-    user.booksMarked.push(bookId)
-    await user.save();
+    const userId = req.authTokenData.id;
+    const bookId = req.body.bookId;
+    const user = await User.findById(userId);
+    console.log(user);
+    // const exist = await User.booksMarked.id("63dce1e34e9ed55aae6292cc");
+    console.log(exist);
+    // user.booksMarked.push(bookId);
+    // await user.save();
 
     sendResponse(201, true, 'book marked', res)
+
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+// REMOVE BOOK FROM BOOKMARK
+export const removeBookFromBookmark = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+    const bookId = req.body.bookId;
+    const user = await User.findById(userId);
+    user.booksMarked.pull({ _id: bookId });
+    await user.save();
+
+    sendResponse(201, true, 'book unmarked', res)
 
   } catch (e) {
     console.log(e);

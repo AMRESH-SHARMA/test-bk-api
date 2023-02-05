@@ -139,12 +139,6 @@ export const vAddUser = [
 ];
 
 export const vBookmark = [
-  body('userId')
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage('userId can not be empty')
-    .bail(),
   body('bookId')
     .trim()
     .escape()

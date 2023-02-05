@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 export const isAuthenticated = async (req, res, next) => {
   try {
 
-    // console.log(req.headers);
-    const getToken = req.headers.authorization;
+    // console.log(req.headers.authorization.split(" ")[1]);
+    const getToken = req.headers.authorization.split(" ")[1];
 
     const tokendecoded = jwt.verify(getToken, process.env.JWT_SECRET);
 
