@@ -19,9 +19,9 @@ import {
   removeBookFromBookmark
 } from "./userController.js"
 import { isAuthenticated } from "../../util/auth.js"
-import { vUserRegister, vUserLogin, vUsernameUnique, vBookmark, vAccessToken } from "../../util/validators.js"
+import { vUserLogin, vUsernameUnique, vBookmark, vAccessToken } from "../../util/validators.js"
 
-router.route("/user/register").post(vUserRegister, upload.single('image'), registerUser);
+router.route("/user/register").post(upload.single('image'), registerUser);
 
 router.route("/user/login").post(vUserLogin, loginUser);
 
@@ -35,6 +35,6 @@ router.route("/user/update-user").put(vAccessToken, isAuthenticated, upload.sing
 
 router.route("/user/bookmark").post(vAccessToken, isAuthenticated, vBookmark, addBookToBookmark);
 
-router.route("/user/bookunmark").post(vAccessToken,isAuthenticated, vBookmark, removeBookFromBookmark);
+router.route("/user/bookunmark").post(vAccessToken, isAuthenticated, vBookmark, removeBookFromBookmark);
 
 export default router;

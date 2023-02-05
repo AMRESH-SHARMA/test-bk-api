@@ -1,31 +1,5 @@
 import { check, header, body, query, param, validationResult } from 'express-validator'
 
-export const vUserRegister = [
-  body('userName')
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage('username can not be empty')
-    .bail(),
-  body('email')
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage('email can not be empty')
-    .bail(),
-  body('password')
-    .trim()
-    .notEmpty()
-    .withMessage('password can not be empty')
-    .bail(),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(422).json({ success: false, msg: errors.mapped() });
-    next();
-  },
-];
-
 export const vUsernameUnique = [
   check('userName')
     .notEmpty()

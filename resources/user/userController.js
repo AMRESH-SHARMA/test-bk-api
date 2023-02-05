@@ -479,7 +479,7 @@ export const addBookToBookmark = async (req, res, next) => {
     const bookId = req.body.bookId;
     const user = await User.findById(userId);
     console.log(user);
-    // const exist = await User.booksMarked.id("63dce1e34e9ed55aae6292cc");
+    const exist = await User.booksMarked.find({ _id: "63dce1e34e9ed55aae6292cc" });
     console.log(exist);
     // user.booksMarked.push(bookId);
     // await user.save();

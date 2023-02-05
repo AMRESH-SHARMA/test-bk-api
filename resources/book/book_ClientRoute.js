@@ -22,7 +22,7 @@ const cpUpload = upload.fields([
 
 router.route("/book/get-books").get(getAllBooksApproved);
 
-router.route("/book/get-single-book/:id").get(vAccessToken, isAuthenticated, getSingleBookApproved);
+router.route("/book/get-single-book/:id").get(getSingleBookApproved);
 
 router.route("/book/create-book").post(vAccessToken, isAuthenticated, cpUpload, addBook);
 
