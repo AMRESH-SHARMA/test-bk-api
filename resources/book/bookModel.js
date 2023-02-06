@@ -69,7 +69,7 @@ const bookSchema = new mongoose.Schema({
   },
   approved: {
     type: Boolean,
-    default: "false",
+    default: "true",
   },
   uploadedBy: {
     type: mongoose.Schema.Types.ObjectId,

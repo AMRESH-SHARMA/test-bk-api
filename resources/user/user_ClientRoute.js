@@ -15,8 +15,8 @@ import {
   updateUser,
   getSingleUser,
   getBooksUploadedBySingleUser,
-  addBookToBookmark,
-  removeBookFromBookmark
+  toggleBookmark,
+  allBookmark,
 } from "./userController.js"
 import { isAuthenticated } from "../../util/auth.js"
 import { vUserLogin, vUsernameUnique, vBookmark, vAccessToken } from "../../util/validators.js"
@@ -33,8 +33,8 @@ router.route("/user/get-books-uploadedby-single-user").get(vAccessToken, isAuthe
 
 router.route("/user/update-user").put(vAccessToken, isAuthenticated, upload.single('image'), updateUser);
 
-router.route("/user/bookmark").post(vAccessToken, isAuthenticated, vBookmark, addBookToBookmark);
+router.route("/user/bookmark").post(vAccessToken, isAuthenticated, vBookmark, toggleBookmark);
 
-router.route("/user/bookunmark").post(vAccessToken, isAuthenticated, vBookmark, removeBookFromBookmark);
+router.route("/user/all-bookmark").get(vAccessToken, isAuthenticated, allBookmark);
 
 export default router;

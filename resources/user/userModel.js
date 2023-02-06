@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
   },
   approved: {
     type: Boolean,
-    default: "false",
+    default: "true",
   },
   otp: {
     type: Number,
@@ -47,13 +47,13 @@ const userSchema = new mongoose.Schema({
   booksAdded: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Book',
+      ref: "Book",
     }
   ],
   booksMarked: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Book',
+      ref: "Book",
     }
   ],
   resetPasswordToken: String,

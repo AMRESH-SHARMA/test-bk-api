@@ -357,7 +357,7 @@ export const getSingleUser = async (req, res, next) => {
 export const getBooksUploadedBySingleUserByParam = async (req, res, next) => {
   try {
 
-    const userId = req.authTokenData.id;
+    const userId = req.params.id;
 
     const user = await User.findById(userId).select('booksAdded').populate({
       path: 'booksAdded',
@@ -472,21 +472,23 @@ export const updateUserStatus = async (req, res, next) => {
   }
 };
 
-// ADD BOOK TO BOOKMARK
-export const addBookToBookmark = async (req, res, next) => {
+// BOOK MARK / UNMARK
+export const toggleBookmark = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
     const bookId = req.body.bookId;
 
+    const user = await User.findById(userId);
     const exist = await User.find({ booksMarked: { "$in": [bookId] } });
     if (exist.length) {
-      return sendResponse(201, true, 'already book marked', res)
+      user.booksMarked.pull({ _id: bookId });
+      await user.save();
+      return sendResponse(201, true, 'book unmarked', res)
+    } else {
+      user.booksMarked.push(bookId);
+      await user.save();
+      return sendResponse(201, true, 'book marked', res)
     }
-    const user = await User.findById(userId);
-    user.booksMarked.push(bookId);
-    await user.save();
-
-    sendResponse(201, true, 'book marked', res)
 
   } catch (e) {
     console.log(e);
@@ -494,22 +496,15 @@ export const addBookToBookmark = async (req, res, next) => {
   }
 };
 
-// REMOVE BOOK FROM BOOKMARK
-export const removeBookFromBookmark = async (req, res, next) => {
+// GET ALL BOOK MARK
+export const allBookmark = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const bookId = req.body.bookId;
 
-    const exist = await User.find({ booksMarked: { "$in": [bookId] } });
-    if (!exist.length) {
-      return sendResponse(201, true, 'already book unmarked', res)
-    }
-    const user = await User.findById(userId);
-    user.booksMarked.pull({ _id: bookId });
-    await user.save();
-
-    sendResponse(201, true, 'book unmarked', res)
-
+    const user = await User.findById(userId).select("booksMarked").populate({
+      path: 'booksMarked', populate: { path: 'genre language' }, model: 'Book'
+    })
+    sendResponse(201, true, user, res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
