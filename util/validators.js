@@ -86,6 +86,12 @@ export const vAddUser = [
     .notEmpty()
     .withMessage('userName can not be empty')
     .bail(),
+  body('fullName')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('name can not be empty')
+    .bail(),
   body('email')
     .trim()
     .escape()
@@ -98,11 +104,29 @@ export const vAddUser = [
     .notEmpty()
     .withMessage('phone can not be empty')
     .bail(),
+  body('addressLine1')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('addressLine1 can not be empty')
+    .bail(),
   body('city')
     .trim()
     .escape()
     .notEmpty()
     .withMessage('city can not be empty')
+    .bail(),
+  body('state')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('state can not be empty')
+    .bail(),
+    body('pinCode')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('pinCode can not be empty')
     .bail(),
   (req, res, next) => {
     const errors = validationResult(req);

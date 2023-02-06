@@ -5,23 +5,53 @@ import crypto from "crypto"
 const userSchema = new mongoose.Schema({
   userName: {
     type: String,
+    trim: true,
     unique: true,
+  },
+  fullName: {
+    type: String,
+    trim: true,
   },
   email: {
     type: String,
+    trim: true,
     lowercase: true,
     unique: true,
   },
   phone: {
     type: Number,
+    trim: true,
     unique: true,
     sparse: true
   },
+  addressLine1: {
+    type: String,
+    trim: true,
+  },
+  addressLine2: {
+    type: String,
+    trim: true,
+  },
   city: {
     type: String,
+    trim: true,
+  },
+  state: {
+    type: String,
+    trim: true,
+  },
+  country: {
+    type: String,
+    trim: true,
+    default: "India",
+  },
+  pincode: {
+    type: Number,
+    trim: true,
   },
   password: {
     type: String,
+    trim: true,
     select: false,
   },
   image: {
@@ -42,6 +72,7 @@ const userSchema = new mongoose.Schema({
   },
   otp: {
     type: Number,
+    trim: true,
     default: null,
   },
   booksAdded: [
