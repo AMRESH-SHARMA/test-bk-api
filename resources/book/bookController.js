@@ -163,7 +163,6 @@ export const addBook = async (req, res, next) => {
   }
 };
 
-
 export const updateBook = async (req, res, next) => {
   try {
     const { bookName, genre, language, author, description, rentPerDay } = req.body;
@@ -235,7 +234,20 @@ export const deleteSingleBookApproved = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
     const bookId = req.params.id
-    await Book.deleteOne({ _id: bookId }).where('approved').equals(true)
+
+    const book = await Book.findById(bookId);
+
+    await cloudinary.v2.uploader.destroy(book.image1.public_id)
+    if (book.image2) {
+      await cloudinary.v2.uploader.destroy(book.image2.public_id)
+    }
+    if (book.image3) {
+      await cloudinary.v2.uploader.destroy(book.image3.public_id)
+    }
+    if (book.image4) {
+      await cloudinary.v2.uploader.destroy(book.image4.public_id)
+    }
+    await Book.deleteOne({ _id: bookId });
     const user = await User.findById(userId);
     user.booksAdded.pull({ _id: bookId });
     await user.save();
@@ -250,8 +262,22 @@ export const deleteSingleBookApproved = async (req, res, next) => {
 export const deleteSingleBook = async (req, res, next) => {
   try {
     const userId = req.params.uploadedBy;
-    const bookId = req.params.id
-    await Book.deleteOne({ _id: bookId })
+    const bookId = req.params.id;
+
+    const book = await Book.findById(bookId);
+
+    await cloudinary.v2.uploader.destroy(book.image1.public_id)
+    if (book.image2) {
+      await cloudinary.v2.uploader.destroy(book.image2.public_id)
+    }
+    if (book.image3) {
+      await cloudinary.v2.uploader.destroy(book.image3.public_id)
+    }
+    if (book.image4) {
+      await cloudinary.v2.uploader.destroy(book.image4.public_id)
+    }
+
+    await Book.deleteOne({ _id: bookId });
     const user = await User.findById(userId);
     user.booksAdded.pull({ _id: bookId });
     await user.save();
