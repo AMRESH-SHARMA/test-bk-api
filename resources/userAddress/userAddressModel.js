@@ -38,5 +38,30 @@ const userAddressSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
+userAddressSchema.pre('save', function (next) {
+  try {
+    this.addressLine = this.addressLine.split(' ')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ')
+    this.city = this.city.split(' ')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ')
+    this.state = this.state.split(' ')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ')
+    this.country = this.country.split(' ')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ')
+    if (this.landmark) {
+      this.landmark = this.landmark.split(' ')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ')
+    }
+    next()
+  } catch (e) {
+    console.log(e);
+  }
+})
+
 const UserAddressModel = mongoose.model("UserAddress", userAddressSchema);
 export default UserAddressModel;

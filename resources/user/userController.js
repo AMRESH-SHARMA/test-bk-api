@@ -278,7 +278,7 @@ export const logout = async (req, res, next) => {
 //user create
 export const addUser = async (req, res, next) => {
   try {
-    const { uniqueId, userName, fullName, email, phone, pinCode } = req.body;
+    const { uniqueId, userName, fullName, email, phone } = req.body;
 
     const exist1 = await User.findOne({ userName: userName }).countDocuments();
     if (exist1) {
@@ -296,16 +296,8 @@ export const addUser = async (req, res, next) => {
       fullName,
       email,
       phone,
-      // addressLine1,
-      // city,
-      // state,
-      // country,
-      // pinCode,
       role: 'user'
     });
-    if (addressLine2) {
-      user.addressLine2 = addressLine2;
-    }
     sendResponse(201, true, user, res)
   } catch (e) {
     console.log(e);

@@ -162,12 +162,6 @@ export const vAddUserAddressClient = [
     .notEmpty()
     .withMessage('addressLine can not be empty')
     .bail(),
-  body('landmark')
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage('landmark can not be empty')
-    .bail(),
   body('city')
     .trim()
     .escape()

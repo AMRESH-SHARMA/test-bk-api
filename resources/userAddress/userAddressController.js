@@ -21,22 +21,69 @@ export const addUserAddress = async (req, res, next) => {
     }
 
     const newUserAddress = await UserAddress.create(payLoadObj);
-    console.log(newUserAddress);
-
     const user = await User.findById(userId);
-    console.log(user);
     user.address.push(newUserAddress._id);
     await user.save();
-
     const result = await User.findById(userId).populate('address')
-    console.log(result);
-
+    
     sendResponse(201, true, 'userAddress', res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
   }
 };
+
+//GET ALL USER ADDRESS BY PARAM
+export const getAllAddressByParam = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    const { skip, limit } = req.query;
+
+    const totalDocs = await User.findById(userId).select('address').populate('address')
+    if (totalDocs.address.length) {
+      const result = await User.findById(userId).select('address').populate('address').skip(skip).limit(limit);
+      sendResponse(200, true, { totalDocs: totalDocs.address.length, result }, res)
+    } else sendResponse(400, false, 'address not found', res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+//GET ALL USER ADDRESS BY PARAM USERID
+export const getSingleUserAddressByParam = async (req, res, next) => {
+  try {
+    const addressId = req.params.addressId;
+
+    const address = await UserAddress.findById(addressId);
+    if (!address) {
+      return sendResponse(400, false, `address does not exist with Id: ${addressId}`, res)
+    }
+    sendResponse(200, true, address, res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+// DEL SINGLE ADDRESS BY PARAMS
+export const deleteSingleAddress = async (req, res, next) => {
+  try {
+    const addressId = req.params.addressId;
+    const userId = req.params.userId;
+
+    await UserAddress.deleteOne({ _id: addressId });
+    const user = await User.findById(userId);
+    user.address.pull({ _id: addressId });
+    await user.save();
+
+    sendResponse(201, true, 'address deleted', res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+}
+// CLIENT**********************************************************************************************
 
 //CREATE USER ADDRESS CLIENT
 export const addUserAddressClient = async (req, res, next) => {
@@ -68,55 +115,6 @@ export const addUserAddressClient = async (req, res, next) => {
     sendResponse(400, false, e.message, res)
   }
 };
-
-//GET ALL USER ADDRESS BY USERID
-export const getAllAddressByUserId = async (req, res, next) => {
-  try {
-    const userId = req.params.userId;
-    const { skip, limit } = req.query;
-
-    const totalDocs = await User.findById(userId).select('address').populate('address')
-    if (totalDocs.address.length) {
-      const result = await User.findById(userId).select('address').populate('address').skip(skip).limit(limit);
-      sendResponse(200, true, { totalDocs: totalDocs.address.length, result }, res)
-    } else sendResponse(400, false, 'address not found', res)
-  } catch (e) {
-    console.log(e);
-    sendResponse(400, false, e.message, res)
-  }
-};
-
-// //GET SINGLE USER ADDRESS
-export const getSingleUserAddressByParam = async (req, res, next) => {
-  try {
-    const addressId = req.params.id;
-
-    const address = await UserAddress.findById(addressId);
-    if (!address) {
-      return sendResponse(400, false, `address does not exist with Id: ${addressId}`, res)
-    }
-    sendResponse(200, true, address, res)
-  } catch (e) {
-    console.log(e);
-    sendResponse(400, false, e.message, res)
-  }
-};
-
-//GET SINGLE USER ADDRESS
-// export const getSingleUserAddressByParam = async (req, res, next) => {
-//   try {
-//     const userId = req.authTokenData.id;
-
-//     const user = await User.findById(userId).where('approved').equals(true).populate('booksAdded')
-//     if (!user) {
-//       return sendResponse(400, false, `User does not exist with Id: ${userId}`, res)
-//     }
-//     sendResponse(200, true, user, res)
-//   } catch (e) {
-//     console.log(e);
-//     sendResponse(400, false, e.message, res)
-//   }
-// };
 
 //Get Books Uploaded By Single User By Param
 export const getBooksUploadedBySingleUserByParam = async (req, res, next) => {
@@ -214,65 +212,5 @@ export const updateUser = async (req, res, next) => {
       return sendResponse(400, false, `${Object.keys(e.keyValue)} already in use`, res)
     }
     sendResponse(400, false, e, res)
-  }
-};
-
-//Update user
-export const updateUserStatus = async (req, res, next) => {
-  try {
-    const TrueStatus = {
-      approved: 'true'
-    };
-    const FalseStatus = {
-      approved: 'false'
-    };
-    const user = await User.findById(req.body.id);
-    if (user.approved) {
-      await User.updateOne({ _id: mongoose.mongo.ObjectId(req.body.id) }, FalseStatus);
-    } else {
-      await User.updateOne({ _id: mongoose.mongo.ObjectId(req.body.id) }, TrueStatus);
-    }
-    sendResponse(200, true, 'User Status Updated', res)
-  } catch (e) {
-    sendResponse(400, false, e.message, res)
-  }
-};
-
-// BOOK MARK / UNMARK
-export const toggleBookmark = async (req, res, next) => {
-  try {
-    const userId = req.authTokenData.id;
-    const bookId = req.body.bookId;
-
-    const user = await User.findById(userId);
-    const exist = await User.find({ booksMarked: { "$in": [bookId] } });
-    if (exist.length) {
-      user.booksMarked.pull({ _id: bookId });
-      await user.save();
-      return sendResponse(201, true, 'book unmarked', res)
-    } else {
-      user.booksMarked.push(bookId);
-      await user.save();
-      return sendResponse(201, true, 'book marked', res)
-    }
-
-  } catch (e) {
-    console.log(e);
-    sendResponse(400, false, e.message, res)
-  }
-};
-
-// GET ALL BOOK MARK
-export const allBookmark = async (req, res, next) => {
-  try {
-    const userId = req.authTokenData.id;
-
-    const user = await User.findById(userId).select("booksMarked").populate({
-      path: 'booksMarked', populate: { path: 'genre language' }, model: 'Book'
-    })
-    sendResponse(201, true, user, res)
-  } catch (e) {
-    console.log(e);
-    sendResponse(400, false, e.message, res)
   }
 };
