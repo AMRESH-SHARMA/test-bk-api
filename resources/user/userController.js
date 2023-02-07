@@ -352,7 +352,7 @@ export const getSingleUser = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
 
-    const user = await User.findById(userId).where('approved').equals(true).populate('booksAdded')
+    const user = await User.findById(userId).where('approved').equals(true).populate('booksAdded').populate('address')
     if (!user) {
       return sendResponse(400, false, `User does not exist with Id: ${userId}`, res)
     }
