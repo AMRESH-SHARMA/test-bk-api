@@ -155,12 +155,12 @@ export const vUpdateStatus = [
   },
 ];
 
-export const vAddUserAddressClient = [
-  body('addressLine')
+export const vAddUserAddress = [
+  body('addressLine1')
     .trim()
     .escape()
     .notEmpty()
-    .withMessage('addressLine can not be empty')
+    .withMessage('addressLine1 can not be empty')
     .bail(),
   body('city')
     .trim()

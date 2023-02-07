@@ -1,10 +1,14 @@
 import mongoose from "mongoose"
 
 const userAddressSchema = new mongoose.Schema({
-  addressLine: {
+  addressLine1: {
     type: String,
     trim: true,
-    required: true,
+    maxLength: 50,
+  },
+  addressLine2: {
+    type: String,
+    trim: true,
     maxLength: 50,
   },
   landmark: {
@@ -15,24 +19,20 @@ const userAddressSchema = new mongoose.Schema({
   city: {
     type: String,
     trim: true,
-    required: true,
     maxLength: 20,
   },
   state: {
     type: String,
     trim: true,
-    required: true,
     maxLength: 20,
   },
   zipCode: {
     type: Number,
     trim: true,
-    required: true,
   },
   country: {
     type: String,
     trim: true,
-    required: true,
     maxLength: 20,
     default: "India",
   },
@@ -40,18 +40,31 @@ const userAddressSchema = new mongoose.Schema({
 
 userAddressSchema.pre('save', function (next) {
   try {
-    this.addressLine = this.addressLine.split(' ')
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      .join(' ')
-    this.city = this.city.split(' ')
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      .join(' ')
-    this.state = this.state.split(' ')
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      .join(' ')
-    this.country = this.country.split(' ')
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      .join(' ')
+    if (this.addressLine1) {
+      this.addressLine1 = this.addressLine1.split(' ')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ')
+    }
+    if (this.addressLine2) {
+      this.addressLine2 = this.addressLine2.split(' ')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ')
+    }
+    if (this.city) {
+      this.city = this.city.split(' ')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ')
+    }
+    if (this.state) {
+      this.state = this.state.split(' ')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ')
+    }
+    if (this.country) {
+      this.country = this.country.split(' ')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ')
+    }
     if (this.landmark) {
       this.landmark = this.landmark.split(' ')
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
