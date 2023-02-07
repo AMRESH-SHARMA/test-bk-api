@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
     lowercase: true,
+    maxLength: 100,
     unique: true,
   },
   phone: {
@@ -24,32 +25,12 @@ const userSchema = new mongoose.Schema({
     unique: true,
     sparse: true
   },
-  addressLine1: {
-    type: String,
-    trim: true,
-  },
-  addressLine2: {
-    type: String,
-    trim: true,
-  },
-  city: {
-    type: String,
-    trim: true,
-  },
-  state: {
-    type: String,
-    trim: true,
-  },
-  country: {
-    type: String,
-    trim: true,
-    default: "India",
-  },
-  pincode: {
-    type: Number,
-    trim: true,
-    default: null,
-  },
+  address: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserAddress",
+    }
+  ],
   password: {
     type: String,
     trim: true,

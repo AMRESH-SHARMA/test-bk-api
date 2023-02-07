@@ -9,7 +9,8 @@ import { mediaDel } from "../../util/mediaDel.js";
 //Register a User
 export const registerUser = async (req, res, next) => {
   try {
-    const { userName, email, password } = req.body;
+    const { userName, email, password, address } = req.body;
+    console.log(req.body)
 
     const exist1 = await User.findOne({ userName: userName }).countDocuments();
     if (exist1) {
@@ -26,6 +27,7 @@ export const registerUser = async (req, res, next) => {
       userName,
       email,
       password: hashedPassword,
+      address
     }
 
     if (req.file) {
@@ -276,7 +278,7 @@ export const logout = async (req, res, next) => {
 //user create
 export const addUser = async (req, res, next) => {
   try {
-    const { uniqueId, userName, fullName, email, phone, addressLine1, addressLine2, city, state, country, pinCode } = req.body;
+    const { uniqueId, userName, fullName, email, phone, pinCode } = req.body;
 
     const exist1 = await User.findOne({ userName: userName }).countDocuments();
     if (exist1) {
@@ -294,11 +296,11 @@ export const addUser = async (req, res, next) => {
       fullName,
       email,
       phone,
-      addressLine1,
-      city,
-      state,
+      // addressLine1,
+      // city,
+      // state,
       // country,
-      pinCode,
+      // pinCode,
       role: 'user'
     });
     if (addressLine2) {
@@ -320,7 +322,7 @@ export const getAllUser = async (req, res, next) => {
     const { skip, limit } = req.query
     const totalDocs = await User.countDocuments();
     if (totalDocs) {
-      const result = await User.find().sort({ createdAt: -1 }).all('role', ['user']).skip(skip).limit(limit)
+      const result = await User.find().sort({ userName: -1 }).all('role', ['user']).skip(skip).limit(limit)
       sendResponse(200, true, { totalDocs, result }, res)
     } else sendResponse(400, false, 'users not found', res)
   } catch (e) {
@@ -334,7 +336,7 @@ export const getSingleUserByParam = async (req, res, next) => {
   try {
     const userId = req.params.id;
 
-    const user = await User.findById(userId).populate('booksAdded')
+    const user = await User.findById(userId).populate('booksAdded address')
     if (!user) {
       return sendResponse(400, false, `User does not exist with Id: ${userId}`, res)
     }
@@ -421,7 +423,8 @@ export const updateUserByParam = async (req, res, next) => {
       })
     }
 
-    await User.findByIdAndUpdate(userId, req.body);
+    const u = await User.findByIdAndUpdate(userId, req.body);
+    console.log(u);
     sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
     if (e.code) {

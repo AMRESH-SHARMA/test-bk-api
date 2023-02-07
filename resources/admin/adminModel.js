@@ -20,6 +20,8 @@ const adminSchema = new mongoose.Schema({
   city: {
     type: String,
     trim: true,
+    required: true,
+    maxLength: 20,
   },
   password: {
     type: String,

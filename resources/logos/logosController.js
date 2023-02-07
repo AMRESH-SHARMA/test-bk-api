@@ -17,12 +17,14 @@ export const getAllLogos = async (req, res, next) => {
 export const updateLogos = async (req, res, next) => {
   try {
     const uniqueId = req.params.id;
+    const logos = await Logos.findById(uniqueId);
     const { websiteHeader, websiteFooter, websiteAdminHeader } = req.files
     // console.log(req.files);
     // console.log(req.file);
     const payloadObj = {}
 
     if (websiteHeader) {
+      await cloudinary.v2.uploader.destroy(logos.websiteHeader.public_id);
       await cloudinary.v2.uploader.upload(websiteHeader[0].path, {
         folder: "logos/",
       }).then((result) => {
@@ -35,6 +37,7 @@ export const updateLogos = async (req, res, next) => {
     }
 
     if (websiteFooter) {
+      await cloudinary.v2.uploader.destroy(logos.websiteFooter.public_id);
       await cloudinary.v2.uploader.upload(websiteFooter[0].path, {
         folder: "logos/",
       }).then((result) => {
@@ -46,6 +49,7 @@ export const updateLogos = async (req, res, next) => {
     }
 
     if (websiteAdminHeader) {
+      await cloudinary.v2.uploader.destroy(logos.websiteAdminHeader.public_id);
       await cloudinary.v2.uploader.upload(websiteAdminHeader[0].path, {
         folder: "logos/",
       }).then((result) => {

@@ -104,30 +104,6 @@ export const vAddUser = [
     .notEmpty()
     .withMessage('phone can not be empty')
     .bail(),
-  body('addressLine1')
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage('addressLine1 can not be empty')
-    .bail(),
-  body('city')
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage('city can not be empty')
-    .bail(),
-  body('state')
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage('state can not be empty')
-    .bail(),
-    body('pinCode')
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage('pinCode can not be empty')
-    .bail(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
@@ -170,6 +146,45 @@ export const vUpdateStatus = [
     .escape()
     .notEmpty()
     .withMessage('id can not be empty!')
+    .bail(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(422).json({ success: false, msg: errors.mapped() });
+    next();
+  },
+];
+
+export const vAddUserAddressClient = [
+  body('addressLine')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('addressLine can not be empty')
+    .bail(),
+  body('landmark')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('landmark can not be empty')
+    .bail(),
+  body('city')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('city can not be empty')
+    .bail(),
+  body('state')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('state can not be empty')
+    .bail(),
+  body('zipCode')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('zip code can not be empty')
     .bail(),
   (req, res, next) => {
     const errors = validationResult(req);

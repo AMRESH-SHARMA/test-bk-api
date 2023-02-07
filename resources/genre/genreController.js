@@ -61,7 +61,6 @@ export const addgenre = async (req, res, next) => {
   }
 };
 
-
 export const updategenre = async (req, res, next) => {
   try {
     const { genre } = req.body;
@@ -81,6 +80,9 @@ export const updategenre = async (req, res, next) => {
 
 export const deleteSinglegenre = async (req, res, next) => {
   try {
+    const genreId = req.params.id;
+    const genre = await Genre.findById(genreId);
+    await cloudinary.v2.uploader.destroy(genre.image.public_id)
     await Genre.deleteOne({ _id: req.params.id })
     sendResponse(201, true, 'genre deleted', res)
   } catch (e) {

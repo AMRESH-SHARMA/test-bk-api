@@ -41,6 +41,10 @@ app.use("/", adminRoute);
 import userRoute from "./resources/user/userRoute.js";
 app.use("/", userRoute);
 
+//User ADDRESS
+import userAddressRoute from "./resources/userAddress/userAddressRoute.js";
+app.use("/", userAddressRoute);
+
 //Book
 import bookRoute from "./resources/book/bookRoute.js";
 app.use("/", bookRoute);
@@ -95,6 +99,11 @@ app.use("/", serviceFeesRoute);
 //User
 import user_ClientRoute from "./resources/user/user_ClientRoute.js";
 app.use("/client", user_ClientRoute);
+
+
+//User ADDRESS
+import userAddress_ClientRoute from "./resources/userAddress/userAddress_ClientRoute.js";
+app.use("/client", userAddress_ClientRoute);
 
 //Book
 import book_ClientRoute from "./resources/book/book_ClientRoute.js";

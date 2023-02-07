@@ -27,7 +27,7 @@ router.route("/user/get-single-user/:id").get(vAccessToken, isAuthenticatedAdmin
 
 router.route("/user/get-books-uploadedby-single-user/:id").get(vAccessToken, isAuthenticatedAdmin, vParamId, getBooksUploadedBySingleUserByParam);
 
-router.route("/user/update-user/:id").put(vAccessToken, isAuthenticatedAdmin, vParamId, upload.single('image'), updateUserByParam);
+router.route("/user/update-user/:id").put( upload.single('image'), updateUserByParam);
 
 router.route("/user/update-user-status").put(vAccessToken, isAuthenticatedAdmin, vUpdateStatus, updateUserStatus);
 
