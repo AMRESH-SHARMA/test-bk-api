@@ -19,6 +19,6 @@ router.route("/user/get-single-address/:addressId").get(vAccessToken, isAuthenti
 
 router.route("/user/update-address/:addressId").put(vAccessToken, isAuthenticatedAdmin, updateUserAddress);
 
-router.route("/user/delete-single-address/:addressId/:userId").delete(deleteSingleAddress);
+router.route("/user/delete-single-address/:addressId/:userId").delete(vAccessToken, isAuthenticatedAdmin, deleteSingleAddress);
 
 export default router;
