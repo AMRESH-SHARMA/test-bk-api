@@ -11,6 +11,11 @@ const userAddressSchema = new mongoose.Schema({
     trim: true,
     maxLength: 50,
   },
+  type: {
+    type: String,
+    trim: true,
+    maxLength: 20,
+  },
   landmark: {
     type: String,
     trim: true,
@@ -67,6 +72,11 @@ userAddressSchema.pre('save', function (next) {
     }
     if (this.landmark) {
       this.landmark = this.landmark.split(' ')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ')
+    }
+    if (this.type) {
+      this.type = this.type.split(' ')
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
         .join(' ')
     }

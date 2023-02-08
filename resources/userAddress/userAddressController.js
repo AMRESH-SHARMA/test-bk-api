@@ -6,11 +6,12 @@ import User from "../user/userModel.js";
 //CREATE USER ADDRESS
 export const addUserAddress = async (req, res, next) => {
   try {
-    const { uniqueId, userId, addressLine1, addressLine2, landmark, city, state, country, zipCode } = req.body;
+    const { uniqueId, userId, addressLine1, addressLine2,type, landmark, city, state, country, zipCode } = req.body;
 
     let payLoadObj = {
       _id: uniqueId,
       addressLine1,
+      type,
       city,
       state,
       country,
@@ -105,10 +106,11 @@ export const updateUserAddress = async (req, res, next) => {
 export const addUserAddressClient = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const { addressLine1,addressLine2, landmark, city, state, country, zipCode } = req.body;
+    const { addressLine1,addressLine2,type, landmark, city, state, country, zipCode } = req.body;
 
     let payLoadObj = {
       addressLine1,
+      type,
       city,
       state,
       country,

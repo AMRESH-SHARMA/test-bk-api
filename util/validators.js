@@ -162,6 +162,12 @@ export const vAddUserAddress = [
     .notEmpty()
     .withMessage('addressLine1 can not be empty')
     .bail(),
+  body('type')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('type can not be empty')
+    .bail(),
   body('city')
     .trim()
     .escape()
