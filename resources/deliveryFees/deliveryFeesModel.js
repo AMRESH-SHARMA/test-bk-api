@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 const deliveryFeesSchema = new mongoose.Schema({
   fees: {
     type: Number,
+    trim: true,
   },
   state: {
     type: mongoose.Schema.Types.ObjectId,

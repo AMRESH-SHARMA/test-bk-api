@@ -8,6 +8,6 @@ import {
 
 router.route("/address/get-address").get(getAddress);
 
-router.route("/address/update-address/:id").put(updateAddress);
+router.route("/address/update-address").put(updateAddress);
 
 export default router

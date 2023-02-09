@@ -22,8 +22,12 @@ export const updateSocialMedia = async (req, res, next) => {
       linkedin
     };
 
-    await SocialMedia.findByIdAndUpdate(req.params.id, newData);
-    // await SocialMedia.create(newData);
+    const result = await SocialMedia.findOne();
+    if (result) {
+      await SocialMedia.updateOne(newData);
+      return sendResponse(200, true, 'Updated Successfully', res);
+    }
+    await SocialMedia.create(newData);
     sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
     console.log(e);

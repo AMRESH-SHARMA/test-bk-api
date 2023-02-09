@@ -15,6 +15,6 @@ const cpUpload = upload.fields([
 
 router.route("/logos/get-logos").get(getAllLogos);
 
-router.route("/logos/update-logos/:id").put(cpUpload,updateLogos);
+router.route("/logos/update-logos").put(cpUpload,updateLogos);
 
 export default router

@@ -16,15 +16,56 @@ export const getAllLogos = async (req, res, next) => {
 
 export const updateLogos = async (req, res, next) => {
   try {
-    const uniqueId = req.params.id;
-    const logos = await Logos.findById(uniqueId);
     const { websiteHeader, websiteFooter, websiteAdminHeader } = req.files
-    // console.log(req.files);
-    // console.log(req.file);
+    const logos = await Logos.findOne();
     const payloadObj = {}
+    if (logos) {
+
+      if (websiteHeader) {
+        await cloudinary.v2.uploader.destroy(logos.websiteHeader.public_id);
+        await cloudinary.v2.uploader.upload(websiteHeader[0].path, {
+          folder: "logos/",
+        }).then((result) => {
+          console.log(result)
+          payloadObj.websiteHeader = {
+            public_id: result.public_id,
+            url: result.url,
+          }
+        })
+      }
+
+      if (websiteFooter) {
+        await cloudinary.v2.uploader.destroy(logos.websiteFooter.public_id);
+        await cloudinary.v2.uploader.upload(websiteFooter[0].path, {
+          folder: "logos/",
+        }).then((result) => {
+          payloadObj.websiteFooter = {
+            public_id: result.public_id,
+            url: result.url,
+          }
+        })
+      }
+
+      if (websiteAdminHeader) {
+        await cloudinary.v2.uploader.destroy(logos.websiteAdminHeader.public_id);
+        await cloudinary.v2.uploader.upload(websiteAdminHeader[0].path, {
+          folder: "logos/",
+        }).then((result) => {
+          payloadObj.websiteAdminHeader = {
+            public_id: result.public_id,
+            url: result.url,
+          }
+        })
+      }
+      mediaDel()
+
+      if (Object.keys(payloadObj).length != 0) {
+        await Logos.updateOne(payloadObj);
+        return sendResponse(201, true, 'Updated Successfully', res);
+      }
+    }
 
     if (websiteHeader) {
-      await cloudinary.v2.uploader.destroy(logos.websiteHeader.public_id);
       await cloudinary.v2.uploader.upload(websiteHeader[0].path, {
         folder: "logos/",
       }).then((result) => {
@@ -37,7 +78,6 @@ export const updateLogos = async (req, res, next) => {
     }
 
     if (websiteFooter) {
-      await cloudinary.v2.uploader.destroy(logos.websiteFooter.public_id);
       await cloudinary.v2.uploader.upload(websiteFooter[0].path, {
         folder: "logos/",
       }).then((result) => {
@@ -49,7 +89,6 @@ export const updateLogos = async (req, res, next) => {
     }
 
     if (websiteAdminHeader) {
-      await cloudinary.v2.uploader.destroy(logos.websiteAdminHeader.public_id);
       await cloudinary.v2.uploader.upload(websiteAdminHeader[0].path, {
         folder: "logos/",
       }).then((result) => {
@@ -60,13 +99,12 @@ export const updateLogos = async (req, res, next) => {
       })
     }
     mediaDel()
-    if (Object.keys(payloadObj).length != 0) {
-      payloadObj._id = uniqueId
-      await Logos.findByIdAndUpdate(uniqueId, payloadObj);
-      // const result = await Logos.create(payloadObj);
-    }
-    sendResponse(201, true, 'Updated Successfully', res)
 
+    if (Object.keys(payloadObj).length != 0) {
+      await Logos.create(payloadObj);
+      return sendResponse(201, true, 'Updated Successfully', res);
+    }
+    sendResponse(200, true, 'Updated Successfully', res);
   } catch (e) {
     console.log(e)
     sendResponse(400, false, e.message, res)

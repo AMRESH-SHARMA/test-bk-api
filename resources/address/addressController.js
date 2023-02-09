@@ -27,10 +27,14 @@ export const updateAddress = async (req, res, next) => {
       phone,
       email
     };
+    const result = await Address.findOne();
+    if (result) {
+      await Address.updateOne(newData);
+      return sendResponse(200, true, 'Updated Successfully', res);
+    }
+    await Address.create(newData);
+    sendResponse(200, true, 'Updated Successfully', res);
 
-    await Address.findByIdAndUpdate(req.params.id, newData);
-    // await Address.create(newData);
-    sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)

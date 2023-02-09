@@ -8,6 +8,6 @@ import {
 
 router.route("/internetHandlingFees/get-internetHandlingFees").get(getInternetHandlingFees);
 
-router.route("/internetHandlingFees/update-internetHandlingFees/:id").put(updateInternetHandlingFees);
+router.route("/internetHandlingFees/update-internetHandlingFees").put(updateInternetHandlingFees);
 
 export default router

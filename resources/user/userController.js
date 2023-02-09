@@ -1,5 +1,7 @@
 import User from "./userModel.js"
 import mongoose from "mongoose"
+import DeliveryFees from "../deliveryFees/deliveryFeesModel.js"
+import internetHandlingFeesModel from "../internetHandlingFees/internetHandlingFeesModel.js"
 import { sendResponse } from "../../util/sendResponse.js";
 import { newToken } from '../../util/jwt.js'
 import { bcryptPassword } from '../../util/bcryptPassword.js'
@@ -553,8 +555,16 @@ export const getCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
 
-    const result = await User.findById(userId).select('cart');
-    return sendResponse(201, true, result, res);
+    const internetHandlingFees = await internetHandlingFeesModel.find();
+
+    let fees = {
+      internetHandlingFees: internetHandlingFees[0].fees,
+      deliveryFees: null,
+      serviceFees: null
+    };
+
+    const result = await User.findById(userId).select('cart').populate('cart');
+    return sendResponse(201, true, { result, fees }, res);
 
   } catch (e) {
     console.log(e);
