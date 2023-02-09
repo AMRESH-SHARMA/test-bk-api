@@ -1,6 +1,5 @@
 import User from "./userModel.js"
 import mongoose from "mongoose"
-import DeliveryFees from "../deliveryFees/deliveryFeesModel.js"
 import internetHandlingFeesModel from "../internetHandlingFees/internetHandlingFeesModel.js"
 import { sendResponse } from "../../util/sendResponse.js";
 import { newToken } from '../../util/jwt.js'
@@ -563,7 +562,10 @@ export const getCart = async (req, res, next) => {
       serviceFees: null
     };
 
-    const result = await User.findById(userId).select('cart').populate('cart');
+    const result = await User.findById(userId).select('cart').populate('cart').populate({
+      path: 'cart',
+      populate: { path: 'genre language' }
+    });
     return sendResponse(201, true, { result, fees }, res);
 
   } catch (e) {
