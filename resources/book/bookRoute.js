@@ -30,6 +30,6 @@ router.route("/book/update-book/:id").put(updateBook);
 
 router.route("/book/update-book-status").put(updateBookStatus);
 
-router.route("/book/delete-single-book/:id/:uploadedBy").delete(deleteSingleBook);
+router.route("/book/delete-single-book/:bookId/:uploadedBy").delete(deleteSingleBook);
 
 export default router

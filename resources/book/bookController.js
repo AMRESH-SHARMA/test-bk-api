@@ -262,7 +262,7 @@ export const deleteSingleBookApproved = async (req, res, next) => {
 export const deleteSingleBook = async (req, res, next) => {
   try {
     const userId = req.params.uploadedBy;
-    const bookId = req.params.id;
+    const bookId = req.params.bookId;
 
     const book = await Book.findById(bookId);
 

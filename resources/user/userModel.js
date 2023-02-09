@@ -69,6 +69,12 @@ const userSchema = new mongoose.Schema({
       ref: "Book",
     }
   ],
+  cart: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Book",
+    }
+  ],
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 }, { timestamps: true });

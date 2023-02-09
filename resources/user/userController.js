@@ -513,3 +513,51 @@ export const allBookmark = async (req, res, next) => {
     sendResponse(400, false, e.message, res)
   }
 };
+
+// PUSH TO CART
+export const pushToCart = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+    const bookId = req.params.bookId;
+
+    const user = await User.findById(userId);
+    user.cart.push(bookId);
+    await user.save();
+    return sendResponse(201, true, 'book added to cart', res)
+
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+// POP FROM CART
+export const popFromCart = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+    const bookId = req.params.bookId;
+
+    const user = await User.findById(userId);
+    user.cart.pull({ _id: bookId });
+    await user.save();
+    return sendResponse(201, true, 'book removed from cart', res)
+
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+// GET TO CART
+export const getCart = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+
+    const result = await User.findById(userId).select('cart');
+    return sendResponse(201, true, result, res);
+
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};

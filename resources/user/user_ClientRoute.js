@@ -17,6 +17,9 @@ import {
   getBooksUploadedBySingleUser,
   toggleBookmark,
   allBookmark,
+  pushToCart,
+  popFromCart,
+  getCart
 } from "./userController.js"
 import { isAuthenticated } from "../../util/auth.js"
 import { vUserLogin, vUsernameUnique, vBookmark, vAccessToken } from "../../util/validators.js"
@@ -36,5 +39,11 @@ router.route("/user/update-user").put(vAccessToken, isAuthenticated, upload.sing
 router.route("/user/bookmark").post(vAccessToken, isAuthenticated, vBookmark, toggleBookmark);
 
 router.route("/user/all-bookmark").get(vAccessToken, isAuthenticated, allBookmark);
+
+router.route("/user/cart/:bookId").post(vAccessToken, isAuthenticated, pushToCart);
+
+router.route("/user/cart/:bookId").delete(vAccessToken, isAuthenticated, popFromCart);
+
+router.route("/user/cart").get(vAccessToken, isAuthenticated, getCart);
 
 export default router;
