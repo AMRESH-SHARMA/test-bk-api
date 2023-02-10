@@ -519,6 +519,9 @@ export const pushToCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
     const { noOfDays } = req.body;
+    if (!noOfDays) {
+      noOfDays = 1
+    }
     const bookId = req.params.bookId;
 
     const user = await User.findById(userId);
@@ -546,26 +549,22 @@ export const pushToCart = async (req, res, next) => {
 export const popFromCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const bookId = req.params.bookId;
+    const bookIdArray = req.body.bookIdArray;
 
     const user = await User.findById(userId);
-
-    let flag = 0;
-    user.cart.forEach((el, index) => {
-      if (el.itemId.equals(mongoose.Types.ObjectId(bookId))) {
-        if (el.quantity == 1) {
-          user.cart.splice(index, 1)
-        } else {
-          el.quantity -= 1;
+    bookIdArray.forEach(bookId => {
+      user.cart.forEach((el, index) => {
+        if (el.itemId.equals(mongoose.Types.ObjectId(bookId))) {
+          if (el.quantity == 1) {
+            user.cart.splice(index, 1)
+          } else {
+            el.quantity -= 1;
+          }
         }
-        return flag = 1;
-      }
+      })
     })
-    if (!flag) {
-      return sendResponse(201, true, 'book does not exist in cart', res)
-    }
+
     await user.save();
-    // console.log(user.cart);
     return sendResponse(201, true, 'book removed from cart', res)
 
   } catch (e) {
