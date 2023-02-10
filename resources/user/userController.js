@@ -416,8 +416,7 @@ export const updateUserByParam = async (req, res, next) => {
       })
     }
 
-    const u = await User.findByIdAndUpdate(userId, req.body);
-    console.log(u);
+    await User.findByIdAndUpdate(userId, req.body);
     sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
     if (e.code) {
@@ -455,7 +454,7 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
-//Update user
+//UPDATE USER STATUS
 export const updateUserStatus = async (req, res, next) => {
   try {
     const TrueStatus = {
@@ -519,10 +518,21 @@ export const allBookmark = async (req, res, next) => {
 export const pushToCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
+    const { noOfDays } = req.body;
     const bookId = req.params.bookId;
 
     const user = await User.findById(userId);
-    user.cart.push(bookId);
+
+    let flag = 0;
+    user.cart.forEach((el) => {
+      if (el.itemId.equals(mongoose.Types.ObjectId(bookId))) {
+        el.quantity += 1;
+        return flag = 1;
+      }
+    })
+    if (!flag) {
+      user.cart.push({ itemId: bookId, noOfDays: noOfDays });
+    }
     await user.save();
     return sendResponse(201, true, 'book added to cart', res)
 
@@ -539,8 +549,23 @@ export const popFromCart = async (req, res, next) => {
     const bookId = req.params.bookId;
 
     const user = await User.findById(userId);
-    user.cart.pull({ _id: bookId });
+
+    let flag = 0;
+    user.cart.forEach((el, index) => {
+      if (el.itemId.equals(mongoose.Types.ObjectId(bookId))) {
+        if (el.quantity == 1) {
+          user.cart.splice(index, 1)
+        } else {
+          el.quantity -= 1;
+        }
+        return flag = 1;
+      }
+    })
+    if (!flag) {
+      return sendResponse(201, true, 'book does not exist in cart', res)
+    }
     await user.save();
+    // console.log(user.cart);
     return sendResponse(201, true, 'book removed from cart', res)
 
   } catch (e) {
@@ -556,17 +581,26 @@ export const getCart = async (req, res, next) => {
 
     const internetHandlingFees = await internetHandlingFeesModel.find();
 
-    let fees = {
+    let subTotal = {
       internetHandlingFees: internetHandlingFees[0].fees,
       deliveryFees: null,
       serviceFees: null
     };
 
-    const result = await User.findById(userId).select('cart').populate('cart').populate({
-      path: 'cart',
+    const result = await User.findById(userId).select("cart").populate({
+      path: 'cart.itemId',
       populate: { path: 'genre language' }
     });
-    return sendResponse(201, true, { result, fees }, res);
+
+    let TotalWithoutCharges = 0;
+    result.cart.map((el) => {
+      TotalWithoutCharges += el.itemId.rentPerDay * el.noOfDays * el.quantity
+      // console.log(TotalWithoutCharges);
+    })
+    subTotal.TotalWithoutCharges = TotalWithoutCharges
+    subTotal.Total = TotalWithoutCharges + subTotal.internetHandlingFees + subTotal.deliveryFees + subTotal.serviceFees
+    // console.log(subTotal);
+    return sendResponse(201, true, { result, subTotal }, res);
 
   } catch (e) {
     console.log(e);
