@@ -109,6 +109,10 @@ app.use("/client", userAddress_ClientRoute);
 import book_ClientRoute from "./resources/book/book_ClientRoute.js";
 app.use("/client", book_ClientRoute);
 
+//Order
+import orderRoute from "./resources/order/orderRoute.js";
+app.use("/client", orderRoute);
+
 // Connect to the database before listening
 connectDatabase().then(() => {
   app.listen(PORT, () => {

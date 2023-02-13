@@ -13,17 +13,15 @@ const orderSchema = new mongoose.Schema({
   items: [
     {
       itemId: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
-      rentPerDay: { type: Number },
       noOfDays: { type: Number, default: 1 },
       quantity: { type: Number, default: 1 },
-      amount: { type: Number },
     },
   ],
   // shipping_charge: { type: Number, default: 0 },
   // total_gross_amount: { type: Number, default: 0 },
   // tax_amount: { type: Number, default: 0 },
   totalAmount: { type: Number },
-  paymentMode: { type: String, enum: ["cod", "debitCard", "creditCard"] },  
+  paymentMode: { type: String, enum: ["cod", "debitCard", "creditCard"] },
   payment: { type: String, enum: ["success", "failed"] },
   status: {
     type: String,
@@ -35,6 +33,7 @@ const orderSchema = new mongoose.Schema({
       "cancelled",
       "returned",
     ],
+    default: "new",
   },
   // status_timeline: {
   //   new: { type: Date },

@@ -6,12 +6,14 @@ import {
   getOrderById,
   addOrder,
 } from './orderController.js'
+import { isAuthenticated } from "../../util/auth.js"
+import { vAccessToken } from "../../util/validators.js"
 
 router.route("/order").get(getAllOrders);
 
 router.route("/order/:id").get(getOrderById);
 
-router.route("/order").post(addOrder);
+router.route("/order").post(vAccessToken, isAuthenticated, addOrder);
 
 // router.route("/genre/update-genre/:id").put(updategenre);
 

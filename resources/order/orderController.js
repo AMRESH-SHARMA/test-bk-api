@@ -1,5 +1,7 @@
 import Order from "./orderModel.js"
+import UserAddress from "../userAddress/userAddressModel.js"
 import { sendResponse } from "../../util/sendResponse.js";
+import User from "../user/userModel.js";
 
 export const getAllOrders = async (req, res, next) => {
   try {
@@ -28,17 +30,34 @@ export const getOrderById = async (req, res, next) => {
 
 export const addOrder = async (req, res, next) => {
   try {
-    const { uniqueId, address, itemId,paymentMode } = req.body
+    const userId = req.authTokenData.id;
+    // const userId = "63e11509075a28576731a353";
+    const { uniqueId, addressId, paymentMode } = req.body
 
     const exist = await Order.findById(uniqueId).countDocuments();
     if (exist) {
       return sendResponse(409, false, 'order already exist', res)
     }
 
+    let cartData = await User.findById(userId).select("cart").populate({ path: 'cart.itemId' });
+    let address = await UserAddress.findById(addressId);
+
+    let items = [];
+    let feed = {};
+
+    cartData.cart.forEach(el => {
+      // console.log(el.itemId._id, el.noOfDays, el.quantity);
+      feed.itemId = el.itemId._id;
+      feed.noOfDays = el.noOfDays;
+      feed.quantity = el.quantity;
+      items.push(feed);
+    });
+
     const payloadObj = {
       _id: uniqueId,
       address,
-      paymentMode,
+      items,
+      paymentMode
     }
 
     const result = await Order.create(payloadObj)
