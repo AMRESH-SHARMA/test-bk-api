@@ -2,25 +2,19 @@ import { Router } from "express";
 const router = Router();
 
 import {
-  getAllgenres,
-  getSinglegenre,
-  addgenre,
-  updategenre,
-  deleteSinglegenre
-} from './genreController.js'
+  getAllOrders,
+  getOrderById,
+  addOrder,
+} from './orderController.js'
 
-import multer from "multer";
+router.route("/order").get(getAllOrders);
 
-const upload = multer({ dest: 'uploads/' })
+router.route("/order/:id").get(getOrderById);
 
-router.route("/genre/get-genres").get(getAllgenres);
+router.route("/order").post(addOrder);
 
-router.route("/genre/get-single-genre/:id").get(getSinglegenre);
+// router.route("/genre/update-genre/:id").put(updategenre);
 
-router.route("/genre/create-genre").post(upload.single('image'), addgenre);
-
-router.route("/genre/update-genre/:id").put(updategenre);
-
-router.route("/genre/delete-single-genre/:id").delete(deleteSinglegenre);
+// router.route("/genre/delete-single-genre/:id").delete(deleteSinglegenre);
 
 export default router
