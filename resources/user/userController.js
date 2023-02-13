@@ -518,7 +518,7 @@ export const allBookmark = async (req, res, next) => {
 export const pushToCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const { noOfDays } = req.body;
+    let { noOfDays } = req.body;
     if (!noOfDays) {
       noOfDays = 1
     }
@@ -549,19 +549,19 @@ export const pushToCart = async (req, res, next) => {
 export const popFromCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
+    const deleteItem = req.body.deleteItem;
     let bookIdArray = req.body.bookIdArray;
 
     bookIdArray = bookIdArray.replace(/'/g, '"');
     bookIdArray = JSON.parse(bookIdArray);
-    // ********
-    console.log(typeof (bookIdArray));
-    console.log(bookIdArray)
 
     const user = await User.findById(userId);
     bookIdArray.forEach(bookId => {
       user.cart.forEach((el, index) => {
         if (el.itemId.equals(mongoose.Types.ObjectId(bookId))) {
-          if (el.quantity == 1) {
+          if (deleteItem) {
+            user.cart.pull({ itemId: bookId });
+          }else if (el.quantity == 1) {
             user.cart.splice(index, 1)
           } else {
             el.quantity -= 1;
