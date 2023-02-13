@@ -549,7 +549,12 @@ export const pushToCart = async (req, res, next) => {
 export const popFromCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const bookIdArray = req.body.bookIdArray;
+    let bookIdArray = req.body.bookIdArray;
+
+    bookIdArray = bookIdArray.replace(/'/g, '"');
+    bookIdArray = JSON.parse(bookIdArray);
+    // console.log(typeof (bookIdArray));
+    // console.log(bookIdArray)
 
     const user = await User.findById(userId);
     bookIdArray.forEach(bookId => {
