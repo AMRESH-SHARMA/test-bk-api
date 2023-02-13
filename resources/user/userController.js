@@ -524,7 +524,7 @@ export const pushToCart = async (req, res, next) => {
     }
     const bookId = req.params.bookId;
 
-    const user = await User.findById(userId);
+    let user = await User.findById(userId);
 
     let flag = 0;
     user.cart.forEach((el) => {
@@ -555,7 +555,7 @@ export const popFromCart = async (req, res, next) => {
     bookIdArray = bookIdArray.replace(/'/g, '"');
     bookIdArray = JSON.parse(bookIdArray);
 
-    const user = await User.findById(userId);
+    let user = await User.findById(userId);
     bookIdArray.forEach(bookId => {
       user.cart.forEach((el, index) => {
         if (el.itemId.equals(mongoose.Types.ObjectId(bookId))) {
@@ -592,7 +592,7 @@ export const getCart = async (req, res, next) => {
       serviceFees: null
     };
 
-    const result = await User.findById(userId).select("cart").populate({
+    let result = await User.findById(userId).select("cart").populate({
       path: 'cart.itemId',
       populate: { path: 'genre language' }
     });
