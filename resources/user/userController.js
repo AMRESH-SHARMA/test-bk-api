@@ -553,8 +553,9 @@ export const popFromCart = async (req, res, next) => {
 
     bookIdArray = bookIdArray.replace(/'/g, '"');
     bookIdArray = JSON.parse(bookIdArray);
-    // console.log(typeof (bookIdArray));
-    // console.log(bookIdArray)
+    // ********
+    console.log(typeof (bookIdArray));
+    console.log(bookIdArray)
 
     const user = await User.findById(userId);
     bookIdArray.forEach(bookId => {

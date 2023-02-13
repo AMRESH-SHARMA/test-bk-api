@@ -42,7 +42,7 @@ router.route("/user/all-bookmark").get(vAccessToken, isAuthenticated, allBookmar
 
 router.route("/user/cart/:bookId").post(vAccessToken, isAuthenticated, pushToCart);
 
-router.route("/user/cart").delete(vAccessToken, isAuthenticated, popFromCart);
+router.route("/user/cart").post(vAccessToken, isAuthenticated, popFromCart);
 
 router.route("/user/cart").get(vAccessToken, isAuthenticated, getCart);
 
