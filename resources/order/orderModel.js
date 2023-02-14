@@ -13,15 +13,18 @@ const orderSchema = new mongoose.Schema({
   items: [
     {
       itemId: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
-      noOfDays: { type: Number, default: 1 },
-      quantity: { type: Number, default: 1 },
+      noOfDays: { type: Number, required: true, trim: true },
+      rentPerDay: { type: Number, required: true, trim: true },
+      amount: { type: Number, required: true, trim: true }
     },
   ],
-  // shipping_charge: { type: Number, default: 0 },
-  // total_gross_amount: { type: Number, default: 0 },
-  // tax_amount: { type: Number, default: 0 },
-  totalAmount: { type: Number },
   paymentMode: { type: String, enum: ["cod", "debitCard", "creditCard"] },
+  internetHandlingFees: { type: Number, required: true, trim: true },
+  deliveryFees: { type: Number, required: true, trim: true },
+  serviceFees: { type: Number, required: true, trim: true },
+  totalAmountBeforeCharges: { type: Number, required: true, trim: true },
+  totalAmountAfterCharges: { type: Number, required: true, trim: true },
+
   payment: { type: String, enum: ["success", "failed"] },
   status: {
     type: String,
@@ -44,6 +47,11 @@ const orderSchema = new mongoose.Schema({
   //   returned: { type: Date },
   // },
 }, { timestamps: true });
+
+// orderSchema.pre('save', function (next) {
+//   this.totalAmount = this.clicks / this.views
+//   next();
+// });
 
 const OrderModel = mongoose.model("Order", orderSchema);
 export default OrderModel;

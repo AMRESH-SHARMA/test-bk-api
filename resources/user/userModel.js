@@ -72,8 +72,7 @@ const userSchema = new mongoose.Schema({
   cart: [
     {
       itemId: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
-      noOfDays: { type: Number, default: 1 },
-      quantity: { type: Number, default: 1 }
+      noOfDays: { type: Number, trim: true, minLength: 3, required: true },
     },
   ],
   resetPasswordToken: String,

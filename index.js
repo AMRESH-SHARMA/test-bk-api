@@ -89,7 +89,9 @@ app.use("/", deliveryFeesRoute);
 import serviceFeesRoute from "./resources/serviceFees/serviceFeesRoute.js";
 app.use("/", serviceFeesRoute);
 
-
+//Order
+import orderRoute from "./resources/order/orderRoute.js";
+app.use("/", orderRoute);
 
 
 // ****************************************************************************************************
@@ -110,8 +112,8 @@ import book_ClientRoute from "./resources/book/book_ClientRoute.js";
 app.use("/client", book_ClientRoute);
 
 //Order
-import orderRoute from "./resources/order/orderRoute.js";
-app.use("/client", orderRoute);
+import order_ClientRoute from "./resources/order/order_ClientRoute.js";
+app.use("/client", order_ClientRoute);
 
 // Connect to the database before listening
 connectDatabase().then(() => {

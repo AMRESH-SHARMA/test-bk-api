@@ -55,21 +55,6 @@ userAddressSchema.pre('save', function (next) {
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
         .join(' ')
     }
-    if (this.city) {
-      this.city = this.city.split(' ')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-        .join(' ')
-    }
-    if (this.state) {
-      this.state = this.state.split(' ')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-        .join(' ')
-    }
-    if (this.country) {
-      this.country = this.country.split(' ')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-        .join(' ')
-    }
     if (this.landmark) {
       this.landmark = this.landmark.split(' ')
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())

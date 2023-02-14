@@ -1,9 +1,25 @@
 import Order from "./orderModel.js"
+import { equalsIgnoringCase } from "../../util/others.js"
+import DeliveryFees from "../deliveryFees/deliveryFeesModel.js"
+import ServiceFees from "../serviceFees/serviceFeesModel.js"
 import UserAddress from "../userAddress/userAddressModel.js"
+import InternetHandlingFees from "../internetHandlingFees/internetHandlingFeesModel.js"
 import { sendResponse } from "../../util/sendResponse.js";
 import User from "../user/userModel.js";
 
 export const getAllOrders = async (req, res, next) => {
+  try {
+    const { skip, limit } = req.query
+    const totalDocs = await Order.countDocuments();
+    const result = await Order.find().skip(skip).limit(limit);
+    sendResponse(200, true, { totalDocs, result }, res);
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+export const getOrdersByUserId = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
     const { skip, limit } = req.query
@@ -42,15 +58,36 @@ export const addOrder = async (req, res, next) => {
 
     let cartData = await User.findById(userId).select("cart").populate({ path: 'cart.itemId' });
     let address = await UserAddress.findById(addressId);
+    const internetHandlingFees = await InternetHandlingFees.find();
+    let df = await DeliveryFees.find().populate('state city');
+
+    let dfResult = ""
+    df.map((item) => {
+      if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
+        dfResult = item.fees
+      }
+    })
+
+    let sf = await ServiceFees.find().populate('state city');
+
+    let sfResult = ""
+    sf.map((item) => {
+      if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
+        sfResult = item.fees
+      }
+    })
+
 
     let items = [];
-    let feed = {};
+    let totalAmountBeforeCharges = 0;
 
     cartData.cart.forEach(el => {
-      // console.log(el.itemId._id, el.noOfDays, el.quantity);
+      let feed = {};
       feed.itemId = el.itemId._id;
       feed.noOfDays = el.noOfDays;
-      feed.quantity = el.quantity;
+      feed.rentPerDay = el.itemId.rentPerDay;
+      feed.amount = el.itemId.rentPerDay * el.noOfDays;
+      totalAmountBeforeCharges += feed.amount;
       items.push(feed);
     });
 
@@ -58,11 +95,16 @@ export const addOrder = async (req, res, next) => {
       _id: uniqueId,
       address,
       items,
-      paymentMode
+      paymentMode,
+      internetHandlingFees: internetHandlingFees[0].fees,
+      deliveryFees: dfResult,
+      serviceFees: sfResult,
+      totalAmountBeforeCharges,
+      totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
     }
 
     const result = await Order.create(payloadObj)
-    sendResponse(201, true, result, res)
+    sendResponse(201, true, "order placed", res)
   } catch (e) {
     console.log(e)
     sendResponse(400, false, e.message, res)

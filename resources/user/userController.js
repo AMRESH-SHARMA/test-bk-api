@@ -518,24 +518,22 @@ export const allBookmark = async (req, res, next) => {
 export const pushToCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    let { noOfDays } = req.body;
-    if (!noOfDays) {
-      noOfDays = 1
-    }
+    const noOfDays = req.body.noOfDays;
+    if (parseInt(noOfDays) < 3) return sendResponse(400, true, 'minimum days should be 3', res)
     const bookId = req.params.bookId;
+    let payLoadObj = { itemId: bookId, noOfDays: noOfDays };
 
     let user = await User.findById(userId);
 
-    let flag = 0;
+    let itemFound = 0;
     user.cart.forEach((el) => {
       if (el.itemId.equals(mongoose.Types.ObjectId(bookId))) {
-        el.quantity += 1;
-        return flag = 1;
+        return itemFound = 1;
       }
     })
-    if (!flag) {
-      user.cart.push({ itemId: bookId, noOfDays: noOfDays });
-    }
+    if (itemFound) return sendResponse(201, true, 'book already added to cart', res)
+
+    user.cart.push(payLoadObj);
     await user.save();
     return sendResponse(201, true, 'book added to cart', res)
 
@@ -549,22 +547,14 @@ export const pushToCart = async (req, res, next) => {
 export const popFromCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    let deleteItem = req.body.deleteItem;
     const bookIdString = req.body.bookIdArray;
 
     let bookIdArray = bookIdString.split(" ");
-
     let user = await User.findById(userId);
     bookIdArray.forEach(bookId => {
       user.cart.forEach((el, index) => {
         if (el.itemId.equals(mongoose.Types.ObjectId(bookId))) {
-          if (deleteItem) {
-            user.cart.pull({ itemId: bookId });
-          } else if (el.quantity == 1) {
-            user.cart.splice(index, 1)
-          } else {
-            el.quantity -= 1;
-          }
+          user.cart.splice(index, 1)
         }
       })
     })

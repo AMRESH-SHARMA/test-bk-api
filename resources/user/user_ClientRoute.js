@@ -36,10 +36,12 @@ router.route("/user/get-books-uploadedby-single-user").get(vAccessToken, isAuthe
 
 router.route("/user/update-user").put(vAccessToken, isAuthenticated, upload.single('image'), updateUser);
 
+// book mark
 router.route("/user/bookmark").post(vAccessToken, isAuthenticated, vBookmark, toggleBookmark);
 
 router.route("/user/all-bookmark").get(vAccessToken, isAuthenticated, allBookmark);
 
+// cart
 router.route("/user/cart/:bookId").post(vAccessToken, isAuthenticated, pushToCart);
 
 router.route("/user/cart").post(vAccessToken, isAuthenticated, popFromCart);
