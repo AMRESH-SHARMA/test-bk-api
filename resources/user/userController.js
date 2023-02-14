@@ -458,6 +458,7 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
+
 //UPDATE USER STATUS
 export const updateUserStatus = async (req, res, next) => {
   try {
