@@ -5,9 +5,10 @@ import User from "../user/userModel.js";
 
 export const getAllOrders = async (req, res, next) => {
   try {
+    const userId = req.authTokenData.id;
     const { skip, limit } = req.query
     const totalDocs = await Order.countDocuments();
-    const result = await Order.find().skip(skip).limit(limit)
+    const result = await User.findById(userId).select("order").skip(skip).limit(limit)
     sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);

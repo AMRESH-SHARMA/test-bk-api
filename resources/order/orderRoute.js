@@ -9,9 +9,9 @@ import {
 import { isAuthenticated } from "../../util/auth.js"
 import { vAccessToken } from "../../util/validators.js"
 
-router.route("/order").get(getAllOrders);
+router.route("/order").get(vAccessToken, isAuthenticated, getAllOrders);
 
-router.route("/order/:id").get(getOrderById);
+router.route("/order/:id").get(vAccessToken, isAuthenticated, getOrderById);
 
 router.route("/order").post(vAccessToken, isAuthenticated, addOrder);
 
