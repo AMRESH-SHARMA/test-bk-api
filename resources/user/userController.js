@@ -1,11 +1,15 @@
 import User from "./userModel.js"
 import mongoose from "mongoose"
-import internetHandlingFeesModel from "../internetHandlingFees/internetHandlingFeesModel.js"
-import { sendResponse } from "../../util/sendResponse.js";
+import InternetHandlingFees from "../internetHandlingFees/internetHandlingFeesModel.js"
+import UserAddress from "../userAddress/userAddressModel.js"
+import DeliveryFees from "../deliveryFees/deliveryFeesModel.js"
+import ServiceFees from "../serviceFees/serviceFeesModel.js"
+import { equalsIgnoringCase } from "../../util/others.js"
+import { sendResponse } from "../../util/sendResponse.js"
 import { newToken } from '../../util/jwt.js'
 import { bcryptPassword } from '../../util/bcryptPassword.js'
-import cloudinary from "../../util/cloudinary.js";
-import { mediaDel } from "../../util/mediaDel.js";
+import cloudinary from "../../util/cloudinary.js"
+import { mediaDel } from "../../util/mediaDel.js"
 
 //Register a User
 export const registerUser = async (req, res, next) => {
@@ -573,28 +577,44 @@ export const getCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
 
-    const internetHandlingFees = await internetHandlingFeesModel.find();
-
-    let subTotal = {
-      internetHandlingFees: internetHandlingFees[0].fees,
-      deliveryFees: null,
-      serviceFees: null
-    };
-
-    let result = await User.findById(userId).select("cart").populate({
+    let cartData = await User.findById(userId).select("cart").populate({
       path: 'cart.itemId',
       populate: { path: 'genre language' }
     });
+    let address = await UserAddress.findOne();
+    const internetHandlingFees = await InternetHandlingFees.find();
+    let df = await DeliveryFees.find().populate('state city');
 
-    let TotalWithoutCharges = 0;
-    result.cart.map((el) => {
-      TotalWithoutCharges += el.itemId.rentPerDay * el.noOfDays * el.quantity
-      // console.log(TotalWithoutCharges);
+    let dfResult = ""
+    df.map((item) => {
+      if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
+        dfResult = item.fees
+      }
     })
-    subTotal.TotalWithoutCharges = TotalWithoutCharges
-    subTotal.Total = TotalWithoutCharges + subTotal.internetHandlingFees + subTotal.deliveryFees + subTotal.serviceFees
-    // console.log(subTotal);
-    return sendResponse(201, true, { result, subTotal }, res);
+
+    let sf = await ServiceFees.find().populate('state city');
+    let sfResult = ""
+    sf.map((item) => {
+      if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
+        sfResult = item.fees
+      }
+    })
+
+    let totalAmountBeforeCharges = 0;
+    cartData.cart.forEach(el => {
+      totalAmountBeforeCharges += el.itemId.rentPerDay * el.noOfDays;
+    });
+
+    let subTotal = {
+      internetHandlingFees: internetHandlingFees[0].fees,
+      deliveryFees: dfResult,
+      serviceFees: sfResult,
+      totalAmountBeforeCharges,
+      totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
+    };
+
+    console.log(subTotal);
+    return sendResponse(201, true, { cartData, subTotal }, res);
 
   } catch (e) {
     console.log(e);

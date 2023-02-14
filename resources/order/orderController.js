@@ -9,9 +9,9 @@ import User from "../user/userModel.js";
 
 export const getAllOrders = async (req, res, next) => {
   try {
-    const { skip, limit } = req.query
+    const { skip, limit, status } = req.query
     const totalDocs = await Order.countDocuments();
-    const result = await Order.find().skip(skip).limit(limit);
+    const result = await Order.find({ serviceFees: "1" }).skip(skip).limit(limit);
     sendResponse(200, true, { totalDocs, result }, res);
   } catch (e) {
     console.log(e);
@@ -59,8 +59,8 @@ export const addOrder = async (req, res, next) => {
     let cartData = await User.findById(userId).select("cart").populate({ path: 'cart.itemId' });
     let address = await UserAddress.findById(addressId);
     const internetHandlingFees = await InternetHandlingFees.find();
+    
     let df = await DeliveryFees.find().populate('state city');
-
     let dfResult = ""
     df.map((item) => {
       if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
@@ -69,7 +69,6 @@ export const addOrder = async (req, res, next) => {
     })
 
     let sf = await ServiceFees.find().populate('state city');
-
     let sfResult = ""
     sf.map((item) => {
       if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
