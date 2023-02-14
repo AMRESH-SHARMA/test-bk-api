@@ -75,6 +75,12 @@ const userSchema = new mongoose.Schema({
       noOfDays: { type: Number, trim: true, minLength: 3, required: true },
     },
   ],
+  order: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+    }
+  ],
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 }, { timestamps: true });

@@ -24,7 +24,7 @@ export const getOrdersByUserId = async (req, res, next) => {
     const userId = req.authTokenData.id;
     const { skip, limit } = req.query
     const totalDocs = await Order.countDocuments();
-    const result = await User.findById(userId).select("order").skip(skip).limit(limit)
+    const result = await User.findById(userId).select('order').populate('order').skip(skip).limit(limit)
     sendResponse(200, true, { totalDocs, result }, res)
   } catch (e) {
     console.log(e);
@@ -103,7 +103,10 @@ export const addOrder = async (req, res, next) => {
       totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
     }
 
-    const result = await Order.create(payloadObj)
+    const newOrder = await Order.create(payloadObj);
+    let user = await User.findById(userId);
+    user.order.push(newOrder._id)
+    await user.save();
     sendResponse(201, true, "order placed", res)
   } catch (e) {
     console.log(e)
