@@ -48,7 +48,7 @@ export const getOrderById = async (req, res, next) => {
 export const addOrder = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const { uniqueId, addressId, paymentMode, billOnly } = req.body
+    const { uniqueId, addressId, paymentMode } = req.body
 
     const exist = await Order.findById(uniqueId).countDocuments();
     if (exist) {
@@ -101,16 +101,71 @@ export const addOrder = async (req, res, next) => {
       totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
     }
 
-    if (billOnly == 'true') {
-      let result = payloadObj;
-      return sendResponse(201, true, result, res);
-    }
-
     const newOrder = await Order.create(payloadObj);
     let user = await User.findById(userId);
     user.order.push(newOrder._id)
     await user.save();
     sendResponse(201, true, "order placed", res)
+  } catch (e) {
+    console.log(e)
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+export const generateOrderBill = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+    const { addressId } = req.body
+
+    let cartData = await User.findById(userId).select("cart").populate({ path: 'cart.itemId' });
+    let address = await UserAddress.findById(addressId);
+    const internetHandlingFees = await InternetHandlingFees.find();
+
+    let df = await DeliveryFees.find().populate('state city');
+    let dfResult = ""
+    df.map((item) => {
+      if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
+        dfResult = item.fees
+      }
+    })
+
+    let sf = await ServiceFees.find().populate('state city');
+    let sfResult = ""
+    sf.map((item) => {
+      if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
+        sfResult = item.fees
+      }
+    })
+
+
+    let items = [];
+    let totalAmountBeforeCharges = 0;
+
+    cartData.cart.forEach(el => {
+      let feed = {};
+      feed.itemId = el.itemId._id;
+      feed.noOfDays = el.noOfDays;
+      feed.rentPerDay = el.itemId.rentPerDay;
+      feed.amount = el.itemId.rentPerDay * el.noOfDays;
+      totalAmountBeforeCharges += feed.amount;
+      items.push(feed);
+    });
+
+    const payloadObj = {
+      address,
+      items,
+      internetHandlingFees: internetHandlingFees[0].fees,
+      deliveryFees: dfResult,
+      serviceFees: sfResult,
+      totalAmountBeforeCharges,
+      totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
+    }
+
+    const newOrder = await Order.create(payloadObj);
+    let user = await User.findById(userId);
+    user.order.push(newOrder._id)
+    await user.save()
+    return sendResponse(201, true, payloadObj, res);
   } catch (e) {
     console.log(e)
     sendResponse(400, false, e.message, res)
