@@ -582,24 +582,6 @@ export const getCart = async (req, res, next) => {
       path: 'cart.itemId',
       populate: { path: 'genre language' }
     });
-    let address = await UserAddress.findOne();
-    const internetHandlingFees = await InternetHandlingFees.find();
-    let df = await DeliveryFees.find().populate('state city');
-
-    let dfResult = ""
-    df.map((item) => {
-      if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
-        dfResult = item.fees
-      }
-    })
-
-    let sf = await ServiceFees.find().populate('state city');
-    let sfResult = ""
-    sf.map((item) => {
-      if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
-        sfResult = item.fees
-      }
-    })
 
     let totalAmountBeforeCharges = 0;
     cartData.cart.forEach(el => {
@@ -607,11 +589,7 @@ export const getCart = async (req, res, next) => {
     });
 
     let subTotal = {
-      internetHandlingFees: internetHandlingFees[0].fees,
-      deliveryFees: dfResult,
-      serviceFees: sfResult,
       totalAmountBeforeCharges,
-      totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
     };
 
     console.log(subTotal);
