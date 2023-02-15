@@ -154,17 +154,15 @@ export const generateOrderBill = async (req, res, next) => {
     const payloadObj = {
       address,
       items,
-      internetHandlingFees: internetHandlingFees[0].fees,
-      deliveryFees: dfResult,
-      serviceFees: sfResult,
-      totalAmountBeforeCharges,
-      totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
+      total: {
+        internetHandlingFees: internetHandlingFees[0].fees,
+        deliveryFees: dfResult,
+        serviceFees: sfResult,
+        totalAmountBeforeCharges,
+        totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
+      }
     }
-
-    const newOrder = await Order.create(payloadObj);
-    let user = await User.findById(userId);
-    user.order.push(newOrder._id)
-    await user.save()
+    
     return sendResponse(201, true, payloadObj, res);
   } catch (e) {
     console.log(e)
