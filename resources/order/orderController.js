@@ -48,8 +48,7 @@ export const getOrderById = async (req, res, next) => {
 export const addOrder = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    // const userId = "63e11509075a28576731a353";
-    const { uniqueId, addressId, paymentMode } = req.body
+    const { uniqueId, addressId, paymentMode, billOnly } = req.body
 
     const exist = await Order.findById(uniqueId).countDocuments();
     if (exist) {
@@ -59,7 +58,7 @@ export const addOrder = async (req, res, next) => {
     let cartData = await User.findById(userId).select("cart").populate({ path: 'cart.itemId' });
     let address = await UserAddress.findById(addressId);
     const internetHandlingFees = await InternetHandlingFees.find();
-    
+
     let df = await DeliveryFees.find().populate('state city');
     let dfResult = ""
     df.map((item) => {
@@ -100,6 +99,11 @@ export const addOrder = async (req, res, next) => {
       serviceFees: sfResult,
       totalAmountBeforeCharges,
       totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
+    }
+
+    if (billOnly == 'true') {
+      let result = payloadObj;
+      return sendResponse(201, true, result, res);
     }
 
     const newOrder = await Order.create(payloadObj);
