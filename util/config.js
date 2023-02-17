@@ -10,7 +10,8 @@ export const SECRETS = {
   api_key: process.env.Cloudinary_API_KEY,
   api_secret: process.env.Cloudinary_API_SECRET,
 
-
+  razorpay_key_id: process.env.Razorpay_KEY_ID,
+  razorpay_key_secret: process.env.Razorpay_KEY_SECRET,
   // spacesEndpoint: process.env.DO_SPACES_ENDPOINT,
   // spacesAcessKey: process.env.DO_SPACES_ACCESS_KEY,
   // spacesSecretKey: process.env.DO_SPACES_SECRET_KEY,

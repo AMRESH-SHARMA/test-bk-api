@@ -1,11 +1,13 @@
 import Order from "./orderModel.js"
-import { equalsIgnoringCase } from "../../util/others.js"
 import DeliveryFees from "../deliveryFees/deliveryFeesModel.js"
 import ServiceFees from "../serviceFees/serviceFeesModel.js"
 import UserAddress from "../userAddress/userAddressModel.js"
 import InternetHandlingFees from "../internetHandlingFees/internetHandlingFeesModel.js"
-import { sendResponse } from "../../util/sendResponse.js";
 import User from "../user/userModel.js";
+import { sendResponse } from "../../util/sendResponse.js";
+import { equalsIgnoringCase } from "../../util/others.js";
+import { verifyPayment } from '../../util/razorpay.js'
+import { SECRETS } from "../../util/config.js"
 
 export const getAllOrders = async (req, res, next) => {
   try {
@@ -48,12 +50,12 @@ export const getOrderById = async (req, res, next) => {
 export const addOrder = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const { uniqueId, addressId, paymentMode } = req.body
+    const { addressId, paymentId, orderId, signature, errorCode, errorDescription } = req.body;
 
-    const exist = await Order.findById(uniqueId).countDocuments();
-    if (exist) {
-      return sendResponse(409, false, 'order already exist', res)
-    }
+    // const exist = await Order.findById(uniqueId).countDocuments();
+    // if (exist) {
+    //   return sendResponse(409, false, 'order already exist', res)
+    // }
 
     let cartData = await User.findById(userId).select("cart").populate({ path: 'cart.itemId' });
     let address = await UserAddress.findById(addressId);
@@ -75,7 +77,6 @@ export const addOrder = async (req, res, next) => {
       }
     })
 
-
     let items = [];
     let totalAmountBeforeCharges = 0;
 
@@ -89,23 +90,38 @@ export const addOrder = async (req, res, next) => {
       items.push(feed);
     });
 
+    const currentDate = new Date();
     const payloadObj = {
-      _id: uniqueId,
       address,
       items,
-      paymentMode,
       internetHandlingFees: internetHandlingFees[0].fees,
       deliveryFees: dfResult,
       serviceFees: sfResult,
       totalAmountBeforeCharges,
       totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
+      statusTimeline: { new: currentDate },
+      razorpayOrderId: orderId,
+      razorpayPaymentId: paymentId,
+      razorpaySignature: signature,
     }
 
     const newOrder = await Order.create(payloadObj);
     let user = await User.findById(userId);
     user.order.push(newOrder._id)
     await user.save();
-    sendResponse(201, true, "order placed", res)
+
+    let verifyPaymentInput = {};
+    verifyPaymentInput = { orderId, paymentId, signature }
+    console.log(verifyPayment(verifyPaymentInput))
+    if (verifyPayment(verifyPaymentInput)) {
+      await Order.findByIdAndUpdate(newOrder._id, { paymentStatus: 'success' });
+      return sendResponse(201, true, "order placed", res)
+    } else {
+      verifyPaymentInput = { orderId }
+      await Order.findByIdAndUpdate(newOrder._id, { paymentStatus: 'failed' });
+      return sendResponse(400, true, "order failed", res)
+    }
+
   } catch (e) {
     console.log(e)
     sendResponse(400, false, e.message, res)
@@ -162,7 +178,7 @@ export const generateOrderBill = async (req, res, next) => {
         totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
       }
     }
-    
+
     return sendResponse(201, true, payloadObj, res);
   } catch (e) {
     console.log(e)

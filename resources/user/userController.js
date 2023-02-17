@@ -1,10 +1,5 @@
 import User from "./userModel.js"
 import mongoose from "mongoose"
-import InternetHandlingFees from "../internetHandlingFees/internetHandlingFeesModel.js"
-import UserAddress from "../userAddress/userAddressModel.js"
-import DeliveryFees from "../deliveryFees/deliveryFeesModel.js"
-import ServiceFees from "../serviceFees/serviceFeesModel.js"
-import { equalsIgnoringCase } from "../../util/others.js"
 import { sendResponse } from "../../util/sendResponse.js"
 import { newToken } from '../../util/jwt.js'
 import { bcryptPassword } from '../../util/bcryptPassword.js'

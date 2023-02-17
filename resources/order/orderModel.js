@@ -18,14 +18,12 @@ const orderSchema = new mongoose.Schema({
       amount: { type: Number, required: true, trim: true }
     },
   ],
-  paymentMode: { type: String, enum: ["cod", "debitCard", "creditCard"] },
   internetHandlingFees: { type: Number, required: true, trim: true },
   deliveryFees: { type: Number, required: true, trim: true },
   serviceFees: { type: Number, required: true, trim: true },
   totalAmountBeforeCharges: { type: Number, required: true, trim: true },
   totalAmountAfterCharges: { type: Number, required: true, trim: true },
-
-  payment: { type: String, enum: ["success", "failed"] },
+  paymentStatus: { type: String, enum: ["success", "failed"] },
   status: {
     type: String,
     enum: [
@@ -38,20 +36,18 @@ const orderSchema = new mongoose.Schema({
     ],
     default: "new",
   },
-  // status_timeline: {
-  //   new: { type: Date },
-  //   processing: { type: Date },
-  //   dispatched: { type: Date },
-  //   delivered: { type: Date },
-  //   cancelled: { type: Date },
-  //   returned: { type: Date },
-  // },
+  statusTimeline: {
+    new: { type: Date },
+    processing: { type: Date },
+    dispatched: { type: Date },
+    delivered: { type: Date },
+    cancelled: { type: Date },
+    returned: { type: Date },
+  },
+  razorpayOrderId: { type: String },
+  razorpayPaymentId: { type: String },
+  razorpaySignature: { type: String },
 }, { timestamps: true });
-
-// orderSchema.pre('save', function (next) {
-//   this.totalAmount = this.clicks / this.views
-//   next();
-// });
 
 const OrderModel = mongoose.model("Order", orderSchema);
 export default OrderModel;
