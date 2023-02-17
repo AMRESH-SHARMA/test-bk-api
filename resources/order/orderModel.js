@@ -1,6 +1,5 @@
 import mongoose from "mongoose"
 const orderSchema = new mongoose.Schema({
-  order_id: { type: String },
   address: {
     addressLine1: { type: String },
     addressLine2: { type: String },

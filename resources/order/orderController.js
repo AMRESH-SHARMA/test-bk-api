@@ -9,12 +9,28 @@ import { equalsIgnoringCase } from "../../util/others.js";
 import { verifyPayment } from '../../util/razorpay.js'
 import { SECRETS } from "../../util/config.js"
 
-export const getAllOrders = async (req, res, next) => {
+export const getNewOrders = async (req, res, next) => {
   try {
     const { skip, limit, status } = req.query
     const totalDocs = await Order.countDocuments();
-    const result = await Order.find({ serviceFees: "1" }).skip(skip).limit(limit);
+    const result = await Order.find({ status: status }).skip(skip).limit(limit);
     sendResponse(200, true, { totalDocs, result }, res);
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+export const getOrderById = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id).populate({
+      path: 'items',
+      populate: { path: 'itemId' }
+    });
+    if (!order) {
+      return sendResponse(400, false, `order does not exist with Id: ${req.params.id}`, res)
+    }
+    sendResponse(200, true, order, res)
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
@@ -34,18 +50,8 @@ export const getOrdersByUserId = async (req, res, next) => {
   }
 };
 
-export const getOrderById = async (req, res, next) => {
-  try {
-    const order = await Order.findById(req.params.id);
-    if (!order) {
-      return sendResponse(400, false, `order does not exist with Id: ${req.params.id}`, res)
-    }
-    sendResponse(200, true, order, res)
-  } catch (e) {
-    console.log(e);
-    sendResponse(400, false, e.message, res)
-  }
-};
+
+// **********************************************************CLIENT CONTROLLER
 
 export const addOrder = async (req, res, next) => {
   try {
@@ -114,14 +120,13 @@ export const addOrder = async (req, res, next) => {
     verifyPaymentInput = { orderId, paymentId, signature }
     console.log(verifyPayment(verifyPaymentInput))
     if (verifyPayment(verifyPaymentInput)) {
-      await Order.findByIdAndUpdate(newOrder._id, { paymentStatus: 'success' });
+      await Order.findByIdAndUpdate(newOrder._id, { paymentStatus: 'success' })
       return sendResponse(201, true, "order placed", res)
     } else {
       verifyPaymentInput = { orderId }
-      await Order.findByIdAndUpdate(newOrder._id, { paymentStatus: 'failed' });
+      await Order.findByIdAndUpdate(newOrder._id, { paymentStatus: 'failed' })
       return sendResponse(400, true, "order failed", res)
     }
-
   } catch (e) {
     console.log(e)
     sendResponse(400, false, e.message, res)

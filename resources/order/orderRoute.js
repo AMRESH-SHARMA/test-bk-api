@@ -2,15 +2,15 @@ import { Router } from "express";
 const router = Router();
 
 import {
-  getAllOrders,
+  getNewOrders,
   getOrderById,
 } from './orderController.js'
-import { isAuthenticated } from "../../util/auth.js"
+import { isAuthenticatedAdmin } from "../../util/auth.js"
 import { vAccessToken } from "../../util/validators.js"
 
-router.route("/order").get(vAccessToken, isAuthenticated, getAllOrders);
+router.route("/order").get(vAccessToken, isAuthenticatedAdmin, getNewOrders);
 
-router.route("/order/:id").get(vAccessToken, isAuthenticated, getOrderById);
+router.route("/order/:id").get(vAccessToken, isAuthenticatedAdmin, getOrderById);
 
 // router.route("/genre/update-genre/:id").put(updategenre);
 
