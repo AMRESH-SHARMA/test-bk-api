@@ -5,6 +5,7 @@ import {
   getOrdersByUserId,
   getOrderById,
   addOrder,
+  addSingleOrder,
   generateOrderBill
 } from './orderController.js'
 import { isAuthenticated } from "../../util/auth.js"
@@ -15,6 +16,8 @@ router.route("/order").get(vAccessToken, isAuthenticated, getOrdersByUserId);
 router.route("/order/:id").get(vAccessToken, isAuthenticated, getOrderById);
 
 router.route("/order").post(vAccessToken, isAuthenticated, addOrder);
+
+router.route("/order/single").post(vAccessToken, isAuthenticated, addSingleOrder);
 
 router.route("/order/bill").post(vAccessToken, isAuthenticated, generateOrderBill);
 

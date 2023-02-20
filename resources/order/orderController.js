@@ -13,8 +13,8 @@ export const getNewOrders = async (req, res, next) => {
   try {
     const { skip, limit, status } = req.query
     const totalDocs = await Order.countDocuments();
-    const result = await Order.find({ status: status }).skip(skip).limit(limit);
-    sendResponse(200, true, { totalDocs, result }, res);
+    const userOrder = await Order.find({ status: status }).skip(skip).limit(limit);
+    sendResponse(200, true, { totalDocs, userOrder }, res);
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
@@ -37,13 +37,36 @@ export const getOrderById = async (req, res, next) => {
   }
 };
 
+
+// **********************************************************CLIENT CONTROLLER
+
 export const getOrdersByUserId = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const { skip, limit } = req.query
+    const { skip, limit } = req.query;
     const totalDocs = await Order.countDocuments();
-    const result = await User.findById(userId).select('order').populate('order').skip(skip).limit(limit)
-    sendResponse(200, true, { totalDocs, result }, res)
+    const userOrder = await User.findById(userId).select('order').populate('order').skip(skip).limit(limit);
+
+    let orders = [];
+
+    userOrder.order.forEach(el => {
+      let feed = {};
+      feed.address = el.address;
+      feed.items = el.items;
+      feed.info = {
+        "internetHandlingFees": el.internetHandlingFees,
+        "deliveryFees": el.deliveryFees,
+        "serviceFees": el.serviceFees,
+        "totalAmountBeforeCharges": el.totalAmountBeforeCharges,
+        "totalAmountAfterCharges": el.totalAmountAfterCharges,
+        "status": el.status,
+        "createdAt": el.createdAt,
+        "updatedAt": el.updatedAt,
+      }
+      orders.push(feed);
+    });
+
+    sendResponse(200, true, { totalDocs, result: orders }, res);
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
@@ -51,35 +74,28 @@ export const getOrdersByUserId = async (req, res, next) => {
 };
 
 
-// **********************************************************CLIENT CONTROLLER
-
 export const addOrder = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
     const { addressId, paymentId, orderId, signature, errorCode, errorDescription } = req.body;
-
-    // const exist = await Order.findById(uniqueId).countDocuments();
-    // if (exist) {
-    //   return sendResponse(409, false, 'order already exist', res)
-    // }
 
     let cartData = await User.findById(userId).select("cart").populate({ path: 'cart.itemId' });
     let address = await UserAddress.findById(addressId);
     const internetHandlingFees = await InternetHandlingFees.find();
 
     let df = await DeliveryFees.find().populate('state city');
-    let dfResult = ""
+    let dfuserOrder = ""
     df.map((item) => {
       if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
-        dfResult = item.fees
+        dfuserOrder = item.fees
       }
     })
 
     let sf = await ServiceFees.find().populate('state city');
-    let sfResult = ""
+    let sfuserOrder = ""
     sf.map((item) => {
       if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
-        sfResult = item.fees
+        sfuserOrder = item.fees
       }
     })
 
@@ -101,10 +117,10 @@ export const addOrder = async (req, res, next) => {
       address,
       items,
       internetHandlingFees: internetHandlingFees[0].fees,
-      deliveryFees: dfResult,
-      serviceFees: sfResult,
+      deliveryFees: dfuserOrder,
+      serviceFees: sfuserOrder,
       totalAmountBeforeCharges,
-      totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
+      totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfuserOrder + sfuserOrder,
       statusTimeline: { new: currentDate },
       razorpayOrderId: orderId,
       razorpayPaymentId: paymentId,
@@ -133,6 +149,83 @@ export const addOrder = async (req, res, next) => {
   }
 };
 
+export const addSingleOrder = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+    const { addressId, itemId, noOfDays, paymentId, orderId, signature, errorCode, errorDescription } = req.body;
+
+    // let cartData = await User.findById(userId).select("cart").populate({ path: 'cart.itemId' });
+    let address = await UserAddress.findById(addressId);
+    const internetHandlingFees = await InternetHandlingFees.find();
+
+    let df = await DeliveryFees.find().populate('state city');
+    let dfuserOrder = ""
+    df.map((item) => {
+      if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
+        dfuserOrder = item.fees
+      }
+    })
+
+    let sf = await ServiceFees.find().populate('state city');
+    let sfuserOrder = ""
+    sf.map((item) => {
+      if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
+        sfuserOrder = item.fees
+      }
+    })
+
+    let items = [];
+    let totalAmountBeforeCharges = 0;
+
+    // cartData.cart.forEach(el => {
+    let feed = {};
+    feed.itemId = itemId;
+    feed.noOfDays = noOfDays;
+    //   feed.rentPerDay = el.itemId.rentPerDay;
+    //   feed.amount = el.itemId.rentPerDay * el.noOfDays;
+    //   totalAmountBeforeCharges += feed.amount;
+    //   items.push(feed);
+    // });
+
+    const currentDate = new Date();
+    const payloadObj = {
+      address,
+      items,
+      internetHandlingFees: internetHandlingFees[0].fees,
+      deliveryFees: dfuserOrder,
+      serviceFees: sfuserOrder,
+      totalAmountBeforeCharges,
+      totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfuserOrder + sfuserOrder,
+      statusTimeline: { new: currentDate },
+      razorpayOrderId: orderId,
+      razorpayPaymentId: paymentId,
+      razorpaySignature: signature,
+    }
+
+    // const newOrder = await Order.create(payloadObj);
+    // let user = await User.findById(userId);
+    // user.order.push(newOrder._id)
+    // await user.save();
+
+    // let verifyPaymentInput = {};
+    // verifyPaymentInput = { orderId, paymentId, signature }
+    // console.log(verifyPayment(verifyPaymentInput))
+    // if (verifyPayment(verifyPaymentInput)) {
+    //   await Order.findByIdAndUpdate(newOrder._id, { paymentStatus: 'success' })
+    //   return sendResponse(201, true, "order placed", res)
+    // } else {
+    //   verifyPaymentInput = { orderId }
+    //   await Order.findByIdAndUpdate(newOrder._id, { paymentStatus: 'failed' })
+    //   return sendResponse(400, true, "order failed", res)
+    // }
+    console.log(payloadObj);
+    sendResponse(400, true, payloadObj, res)
+  } catch (e) {
+    console.log(e)
+    sendResponse(400, false, e.message, res)
+  }
+};
+
 export const generateOrderBill = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
@@ -143,18 +236,18 @@ export const generateOrderBill = async (req, res, next) => {
     const internetHandlingFees = await InternetHandlingFees.find();
 
     let df = await DeliveryFees.find().populate('state city');
-    let dfResult = ""
+    let dfuserOrder = ""
     df.map((item) => {
       if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
-        dfResult = item.fees
+        dfuserOrder = item.fees
       }
     })
 
     let sf = await ServiceFees.find().populate('state city');
-    let sfResult = ""
+    let sfuserOrder = ""
     sf.map((item) => {
       if (equalsIgnoringCase(item.state.state, address.state) && equalsIgnoringCase(item.city.city, address.city)) {
-        sfResult = item.fees
+        sfuserOrder = item.fees
       }
     })
 
@@ -177,10 +270,10 @@ export const generateOrderBill = async (req, res, next) => {
       items,
       total: {
         internetHandlingFees: internetHandlingFees[0].fees,
-        deliveryFees: dfResult,
-        serviceFees: sfResult,
+        deliveryFees: dfuserOrder,
+        serviceFees: sfuserOrder,
         totalAmountBeforeCharges,
-        totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfResult + sfResult,
+        totalAmountAfterCharges: totalAmountBeforeCharges + internetHandlingFees[0].fees + dfuserOrder + sfuserOrder,
       }
     }
 
