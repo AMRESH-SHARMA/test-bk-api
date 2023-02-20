@@ -5,8 +5,9 @@ import {
   getOrdersByUserId,
   getOrderById,
   addOrder,
-  addSingleOrder,
-  generateOrderBill
+  generateOrderBill,
+  orderSingleItem,
+  generateSingleOrderBill,
 } from './orderController.js'
 import { isAuthenticated } from "../../util/auth.js"
 import { vAccessToken } from "../../util/validators.js"
@@ -17,9 +18,11 @@ router.route("/order/:id").get(vAccessToken, isAuthenticated, getOrderById);
 
 router.route("/order").post(vAccessToken, isAuthenticated, addOrder);
 
-router.route("/order/single").post(vAccessToken, isAuthenticated, addSingleOrder);
-
 router.route("/order/bill").post(vAccessToken, isAuthenticated, generateOrderBill);
+
+router.route("/order/single").post(vAccessToken, isAuthenticated, orderSingleItem);
+
+router.route("/order/single/bill").post(vAccessToken, isAuthenticated, generateSingleOrderBill);
 
 // router.route("/genre/update-genre/:id").put(updategenre);
 
