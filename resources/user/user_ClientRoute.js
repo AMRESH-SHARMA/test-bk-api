@@ -19,6 +19,7 @@ import {
   allBookmark,
   pushToCart,
   popFromCart,
+  emptyCart,
   getCart
 } from "./userController.js"
 import { isAuthenticated } from "../../util/auth.js"
@@ -45,6 +46,8 @@ router.route("/user/all-bookmark").get(vAccessToken, isAuthenticated, allBookmar
 router.route("/user/cart/:bookId").post(vAccessToken, isAuthenticated, pushToCart);
 
 router.route("/user/cart").post(vAccessToken, isAuthenticated, popFromCart);
+
+router.route("/user/cart").delete(vAccessToken, isAuthenticated, emptyCart);
 
 router.route("/user/cart").get(vAccessToken, isAuthenticated, getCart);
 

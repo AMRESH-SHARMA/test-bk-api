@@ -291,7 +291,7 @@ export const generateSingleOrderBill = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
     const { addressId, itemId, noOfDays } = req.body
-
+    if (parseInt(noOfDays) < 3) return sendResponse(400, true, 'minimum days should be 3', res)
     let book = await Book.findById(itemId);
     let address = await UserAddress.findById(addressId);
     const internetHandlingFees = await InternetHandlingFees.find();

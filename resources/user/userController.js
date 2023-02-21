@@ -84,7 +84,6 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
-
 //USER NAME EXIST
 export const userNameExist = async (req, res, next) => {
   try {
@@ -521,10 +520,12 @@ export const pushToCart = async (req, res, next) => {
     const noOfDays = req.body.noOfDays;
     if (parseInt(noOfDays) < 3) return sendResponse(400, true, 'minimum days should be 3', res)
     const bookId = req.params.bookId;
+
     let payLoadObj = { itemId: bookId, noOfDays: noOfDays };
 
     let user = await User.findById(userId);
 
+    // Check whether incoming bookId is already in cart or not 
     let itemFound = 0;
     user.cart.forEach((el) => {
       if (el.itemId.equals(mongoose.Types.ObjectId(bookId))) {
@@ -568,7 +569,20 @@ export const popFromCart = async (req, res, next) => {
   }
 };
 
-// GET TO CART
+// Empty cart
+export const emptyCart = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+    await User.updateOne({ _id: userId }, { $unset: { cart: 1 } })
+
+    return sendResponse(201, true, 'cart is empty now', res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+// GET CART
 export const getCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
