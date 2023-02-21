@@ -259,45 +259,32 @@ export const getAllBooksApproved = async (req, res, next) => {
     const { language, genre, skip, limit } = req.query
 
     if (genre && language) {
-      const totalDocs = await Book.find({ genre, language })
-        .where('approved').equals(true)
-        .where('availability').equals(true)
-        .countDocuments()
       const result = await Book.find({ genre, language })
         .where('approved').equals(true)
         .where('availability').equals(true)
         .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
-      return sendResponse(200, true, { totalDocs, result }, res)
+      return sendResponse(200, true, { totalDocs: result.length, result }, res)
     }
     if (genre) {
-      const totalDocs = await Book.find({ genre })
-        .where('approved').equals(true)
-        .where('availability').equals(true)
-        .countDocuments()
       const result = await Book.find({ genre })
         .where('approved').equals(true)
         .where('availability').equals(true)
         .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
-      return sendResponse(200, true, { totalDocs, result }, res)
+      return sendResponse(200, true, { totalDocs: result.length, result }, res)
     }
     if (language) {
-      const totalDocs = await Book.find({ language })
-        .where('approved').equals(true)
-        .where('availability').equals(true)
-        .countDocuments()
       const result = await Book.find({ language })
         .where('approved').equals(true)
         .where('availability').equals(true)
         .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
-      return sendResponse(200, true, { totalDocs, result }, res)
+      return sendResponse(200, true, { totalDocs: result.length, result }, res)
     }
 
-    const totalDocs = await Book.countDocuments()
     const result = await Book.find().sort({ createdAt: -1 })
       .where('approved').equals(true)
       .where('availability').equals(true)
       .populate('language').populate('genre').skip(skip).limit(limit)
-    sendResponse(200, true, { totalDocs, result }, res)
+    sendResponse(200, true, { totalDocs: result.length, result }, res)
 
   } catch (e) {
     console.log(e);
