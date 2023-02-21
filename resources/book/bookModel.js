@@ -71,6 +71,10 @@ const bookSchema = new mongoose.Schema({
     type: Boolean,
     default: "true",
   },
+  availability: {
+    type: Boolean,
+    default: "true",
+  },
   uploadedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

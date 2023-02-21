@@ -35,49 +35,6 @@ export const getAllBooks = async (req, res, next) => {
   }
 };
 
-export const getAllBooksApproved = async (req, res, next) => {
-  try {
-    const { language, genre, skip, limit } = req.query
-
-    if (genre && language) {
-      const totalDocs = await Book.find({ genre, language }).where('approved').equals(true).countDocuments()
-      const result = await Book.find({ genre, language }).where('approved').equals(true).sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
-      return sendResponse(200, true, { totalDocs, result }, res)
-    }
-    if (genre) {
-      const totalDocs = await Book.find({ genre }).where('approved').equals(true).countDocuments()
-      const result = await Book.find({ genre }).where('approved').equals(true).sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
-      return sendResponse(200, true, { totalDocs, result }, res)
-    }
-    if (language) {
-      const totalDocs = await Book.find({ language }).where('approved').equals(true).countDocuments()
-      const result = await Book.find({ language }).where('approved').equals(true).sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
-      return sendResponse(200, true, { totalDocs, result }, res)
-    }
-
-    const totalDocs = await Book.countDocuments()
-    const result = await Book.find().sort({ createdAt: -1 }).where('approved').equals(true).populate('language').populate('genre').skip(skip).limit(limit)
-    sendResponse(200, true, { totalDocs, result }, res)
-
-  } catch (e) {
-    console.log(e);
-    sendResponse(400, false, e.message, res)
-  }
-};
-
-export const getSingleBookApproved = async (req, res, next) => {
-  try {
-    const book = await Book.findById(req.params.id).where('approved').equals(true).populate('language').populate('genre');
-    if (!book) {
-      return sendResponse(400, false, `Book does not exist with Id: ${req.params.id}`, res)
-    }
-    sendResponse(200, true, book, res)
-  } catch (e) {
-    console.log(e);
-    sendResponse(400, false, e.message, res)
-  }
-};
-
 export const getSingleBook = async (req, res, next) => {
   try {
     const book = await Book.findById(req.params.id).populate('language').populate('genre');
@@ -237,6 +194,10 @@ export const deleteSingleBookApproved = async (req, res, next) => {
 
     const book = await Book.findById(bookId);
 
+    if (!book.availability) {
+      sendResponse(400, false, 'Book is not available to delete', res)
+    }
+
     await cloudinary.v2.uploader.destroy(book.image1.public_id)
     if (book.image2) {
       await cloudinary.v2.uploader.destroy(book.image2.public_id)
@@ -265,7 +226,9 @@ export const deleteSingleBook = async (req, res, next) => {
     const bookId = req.params.bookId;
 
     const book = await Book.findById(bookId);
-
+    if (!book.availability) {
+      sendResponse(400, false, 'Book is not available to delete', res)
+    }
     await cloudinary.v2.uploader.destroy(book.image1.public_id)
     if (book.image2) {
       await cloudinary.v2.uploader.destroy(book.image2.public_id)
@@ -288,3 +251,72 @@ export const deleteSingleBook = async (req, res, next) => {
     sendResponse(400, false, e.message, res)
   }
 }
+
+// *********************************************************Client
+
+export const getAllBooksApproved = async (req, res, next) => {
+  try {
+    const { language, genre, skip, limit } = req.query
+
+    if (genre && language) {
+      const totalDocs = await Book.find({ genre, language })
+        .where('approved').equals(true)
+        .where('availability').equals(true)
+        .countDocuments()
+      const result = await Book.find({ genre, language })
+        .where('approved').equals(true)
+        .where('availability').equals(true)
+        .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
+      return sendResponse(200, true, { totalDocs, result }, res)
+    }
+    if (genre) {
+      const totalDocs = await Book.find({ genre })
+        .where('approved').equals(true)
+        .where('availability').equals(true)
+        .countDocuments()
+      const result = await Book.find({ genre })
+        .where('approved').equals(true)
+        .where('availability').equals(true)
+        .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
+      return sendResponse(200, true, { totalDocs, result }, res)
+    }
+    if (language) {
+      const totalDocs = await Book.find({ language })
+        .where('approved').equals(true)
+        .where('availability').equals(true)
+        .countDocuments()
+      const result = await Book.find({ language })
+        .where('approved').equals(true)
+        .where('availability').equals(true)
+        .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
+      return sendResponse(200, true, { totalDocs, result }, res)
+    }
+
+    const totalDocs = await Book.countDocuments()
+    const result = await Book.find().sort({ createdAt: -1 })
+      .where('approved').equals(true)
+      .where('availability').equals(true)
+      .populate('language').populate('genre').skip(skip).limit(limit)
+    sendResponse(200, true, { totalDocs, result }, res)
+
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
+export const getSingleBookApproved = async (req, res, next) => {
+  try {
+    const book = await Book.findById(req.params.id)
+      .where('approved').equals(true)
+      .where('availability').equals(true)
+      .populate('language').populate('genre');
+    if (!book) {
+      return sendResponse(400, false, `Book does not exist with Id: ${req.params.id}`, res)
+    }
+    sendResponse(200, true, book, res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};

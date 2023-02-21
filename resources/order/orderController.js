@@ -74,10 +74,10 @@ export const getOrdersByUserId = async (req, res, next) => {
   }
 };
 
-export const addOrder = async (req, res, next) => {
+export const orderCart = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const { addressId, paymentId, orderId, signature, errorCode, errorDescription } = req.body;
+    const { addressId, paymentId, orderId, signature } = req.body;
 
     let cartData = await User.findById(userId).select("cart").populate({ path: 'cart.itemId' });
     let address = await UserAddress.findById(addressId);
@@ -132,17 +132,24 @@ export const addOrder = async (req, res, next) => {
     user.order.push(newOrder._id)
     await user.save();
 
+    // Verify payment status
     let verifyPaymentInput = {};
     verifyPaymentInput = { orderId, paymentId, signature }
     console.log(verifyPayment(verifyPaymentInput))
     if (verifyPayment(verifyPaymentInput)) {
       await Order.findByIdAndUpdate(newOrder._id, { paymentStatus: 'success' })
-      return sendResponse(201, true, "order placed", res)
     } else {
-      verifyPaymentInput = { orderId }
       await Order.findByIdAndUpdate(newOrder._id, { paymentStatus: 'failed' })
       return sendResponse(400, true, "order failed", res)
     }
+
+    // make  book availability to false for other users
+    cartData.cart.forEach(async el => {
+      console.log(el.itemId._id);
+      await Book.findByIdAndUpdate(el.itemId._id, { availability: false });
+    });
+    return sendResponse(201, true, "order placed", res)
+
   } catch (e) {
     console.log(e)
     sendResponse(400, false, e.message, res)

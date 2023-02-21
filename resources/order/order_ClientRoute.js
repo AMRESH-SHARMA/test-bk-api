@@ -4,7 +4,7 @@ const router = Router();
 import {
   getOrdersByUserId,
   getOrderById,
-  addOrder,
+  orderCart,
   generateOrderBill,
   orderSingleItem,
   generateSingleOrderBill,
@@ -16,7 +16,7 @@ router.route("/order").get(vAccessToken, isAuthenticated, getOrdersByUserId);
 
 router.route("/order/:id").get(vAccessToken, isAuthenticated, getOrderById);
 
-router.route("/order").post(vAccessToken, isAuthenticated, addOrder);
+router.route("/order").post(vAccessToken, isAuthenticated, orderCart);
 
 router.route("/order/bill").post(vAccessToken, isAuthenticated, generateOrderBill);
 
