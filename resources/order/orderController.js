@@ -63,6 +63,9 @@ export const getOrdersByUserId = async (req, res, next) => {
         "status": el.status,
         "createdAt": el.createdAt,
         "updatedAt": el.updatedAt,
+        "razorpayOrderId": el.razorpayOrderId,
+        "razorpayPaymentId": el.razorpayPaymentId,
+        "razorpaySignature": el.razorpaySignature,
       }
       orders.push(feed);
     });
