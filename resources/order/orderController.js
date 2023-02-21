@@ -46,7 +46,12 @@ export const getOrdersByUserId = async (req, res, next) => {
     const userId = req.authTokenData.id;
     const { skip, limit } = req.query;
     const totalDocs = await Order.countDocuments();
-    const userOrder = await User.findById(userId).select('order').populate('order').skip(skip).limit(limit);
+    const userOrder = await User.findById(userId)
+      .select('order')
+      .populate({
+        path: 'order', populate: { path: 'items', populate: { path: 'itemId', populate: { path: 'genre language' } } }
+      })
+      .skip(skip).limit(limit);
 
     let orders = [];
 
@@ -70,7 +75,8 @@ export const getOrdersByUserId = async (req, res, next) => {
       orders.push(feed);
     });
 
-    sendResponse(200, true, { totalDocs, result: orders }, res);
+    // sendResponse(200, true, { totalDocs, result: orders }, res);
+    sendResponse(200, true, { totalDocs, result: userOrder }, res);
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
