@@ -162,7 +162,7 @@ export const updateBookApproved = async (req, res, next) => {
       city,
       state
     };
-console.log(newBookData);
+    console.log(newBookData);
     await Book.findByIdAndUpdate(userId, newBookData).where('approved').equals(true);
     sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
@@ -263,7 +263,7 @@ export const deleteSingleBook = async (req, res, next) => {
 export const getAllBooksApproved = async (req, res, next) => {
   try {
     const { language, genre, city, state, skip, limit } = req.query
-
+    console.log(req.query);
     if (genre && language) {
       const result = await Book.find({ city, state, genre, language })
         .where('approved').equals(true)
