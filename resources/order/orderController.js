@@ -15,7 +15,7 @@ export const getNewOrders = async (req, res, next) => {
     const { skip, limit, status } = req.query
     const totalDocs = await Order.countDocuments();
     const userOrder = await Order.find({ status: status }).skip(skip).limit(limit);
-    sendResponse(200, true, { totalDocs, userOrder }, res);
+    sendResponse(200, true, { totalDocs, result: userOrder }, res);
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)

@@ -20,13 +20,13 @@ const cpUpload = upload.fields([
   { name: 'image3', maxCount: 1 },
   { name: 'image4', maxCount: 1 }])
 
-router.route("/book/get-books").get(getAllBooksApproved);
+router.route("/book").get(getAllBooksApproved);
 
 router.route("/book/get-single-book/:id").get(getSingleBookApproved);
 
 router.route("/book/create-book").post(vAccessToken, isAuthenticated, cpUpload, addBook);
 
-router.route("/book/update-book").put(vAccessToken, isAuthenticated, updateBookApproved);
+router.route("/book/:bookId").put(vAccessToken, isAuthenticated, updateBookApproved);
 
 router.route("/book/delete-single-book/:id").delete(vAccessToken, isAuthenticated, deleteSingleBookApproved);
 

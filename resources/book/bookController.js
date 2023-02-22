@@ -37,9 +37,9 @@ export const getAllBooks = async (req, res, next) => {
 
 export const getSingleBook = async (req, res, next) => {
   try {
-    const book = await Book.findById(req.params.id).populate('language').populate('genre');
+    const book = await Book.findById(req.params.bookId).populate('language genre uploadedBy')
     if (!book) {
-      return sendResponse(400, false, `Book does not exist with Id: ${req.params.id}`, res)
+      return sendResponse(400, false, `Book does not exist with Id: ${req.params.bookId}`, res)
     }
     sendResponse(200, true, book, res)
   } catch (e) {
@@ -50,7 +50,7 @@ export const getSingleBook = async (req, res, next) => {
 
 export const addBook = async (req, res, next) => {
   try {
-    const { uniqueId, bookName, genre, language, author, description, rentPerDay, uploadedBy } = req.body;
+    const { uniqueId, bookName, genre, language, author, description, rentPerDay, uploadedBy, city, state } = req.body;
     const { image1, image2, image3, image4 } = req.files
 
     var payloadObj = {
@@ -62,6 +62,8 @@ export const addBook = async (req, res, next) => {
       description,
       rentPerDay,
       uploadedBy,
+      city,
+      state
     }
 
     await cloudinary.v2.uploader.upload(image1[0].path, {
@@ -122,8 +124,8 @@ export const addBook = async (req, res, next) => {
 
 export const updateBook = async (req, res, next) => {
   try {
-    const { bookName, genre, language, author, description, rentPerDay } = req.body;
-
+    const { bookName, genre, language, author, description, rentPerDay, city, state } = req.body;
+    const bookId = req.params.bookId
     const newBookData = {
       bookName,
       genre,
@@ -131,9 +133,11 @@ export const updateBook = async (req, res, next) => {
       author,
       description,
       rentPerDay,
+      city,
+      state
     };
 
-    await Book.findByIdAndUpdate(req.params.id, newBookData);
+    await Book.findByIdAndUpdate(bookId, newBookData);
     sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
     if (e.code) {
@@ -146,7 +150,7 @@ export const updateBook = async (req, res, next) => {
 export const updateBookApproved = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const { bookName, genre, language, author, description, rentPerDay } = req.body;
+    const { bookName, genre, language, author, description, rentPerDay, city, state } = req.body;
 
     const newBookData = {
       bookName,
@@ -155,8 +159,10 @@ export const updateBookApproved = async (req, res, next) => {
       author,
       description,
       rentPerDay,
+      city,
+      state
     };
-
+console.log(newBookData);
     await Book.findByIdAndUpdate(userId, newBookData).where('approved').equals(true);
     sendResponse(200, true, 'Updated Successfully', res)
   } catch (e) {
@@ -256,31 +262,31 @@ export const deleteSingleBook = async (req, res, next) => {
 
 export const getAllBooksApproved = async (req, res, next) => {
   try {
-    const { language, genre, skip, limit } = req.query
+    const { language, genre, city, state, skip, limit } = req.query
 
     if (genre && language) {
-      const result = await Book.find({ genre, language })
+      const result = await Book.find({ city, state, genre, language })
         .where('approved').equals(true)
         .where('availability').equals(true)
         .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
       return sendResponse(200, true, { totalDocs: result.length, result }, res)
     }
     if (genre) {
-      const result = await Book.find({ genre })
+      const result = await Book.find({ city, state, genre })
         .where('approved').equals(true)
         .where('availability').equals(true)
         .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
       return sendResponse(200, true, { totalDocs: result.length, result }, res)
     }
     if (language) {
-      const result = await Book.find({ language })
+      const result = await Book.find({ city, state, language })
         .where('approved').equals(true)
         .where('availability').equals(true)
         .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
       return sendResponse(200, true, { totalDocs: result.length, result }, res)
     }
 
-    const result = await Book.find().sort({ createdAt: -1 })
+    const result = await Book.find({ city, state }).sort({ createdAt: -1 })
       .where('approved').equals(true)
       .where('availability').equals(true)
       .populate('language').populate('genre').skip(skip).limit(limit)

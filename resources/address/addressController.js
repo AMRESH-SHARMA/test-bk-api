@@ -3,7 +3,8 @@ import { sendResponse } from "../../util/sendResponse.js";
 
 export const getAddress = async (req, res, next) => {
   try {
-    const result = await Address.find();
+    const { skip, limit } = req.query
+    const result = await Address.find().skip(skip).limit(limit);
     sendResponse(200, true, result, res)
   } catch (e) {
     console.log(e);

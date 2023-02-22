@@ -20,13 +20,13 @@ const cpUpload = upload.fields([
   { name: 'image3', maxCount: 1 },
   { name: 'image4', maxCount: 1 }])
 
-router.route("/book/get-books").get(getAllBooks);
+router.route("/book").get(getAllBooks);
 
-router.route("/book/get-single-book/:id").get(getSingleBook);
+router.route("/book/:bookId").get(getSingleBook);
 
-router.route("/book/create-book").post(cpUpload, addBook);
+router.route("/book").post(cpUpload, addBook);
 
-router.route("/book/update-book/:id").put(updateBook);
+router.route("/book/:bookId").put(updateBook);
 
 router.route("/book/update-book-status").put(updateBookStatus);
 
