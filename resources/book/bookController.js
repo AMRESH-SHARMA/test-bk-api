@@ -309,7 +309,7 @@ export const getSingleBookApproved = async (req, res, next) => {
   try {
     const book = await Book.findById(req.params.id)
       .where('approved').equals(true)
-      .where('availability').equals(true)
+      // .where('availability').equals(true)
       .populate('language').populate('genre');
     if (!book) {
       return sendResponse(400, false, `Book does not exist with Id: ${req.params.id}`, res)
