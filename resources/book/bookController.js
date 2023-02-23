@@ -263,7 +263,6 @@ export const deleteSingleBook = async (req, res, next) => {
 export const getAllBooksApproved = async (req, res, next) => {
   try {
     const { language, genre, city, state, skip, limit } = req.query
-    console.log(req.query);
     if (genre && language) {
       const result = await Book.find({ city, state, genre, language })
         .where('approved').equals(true)
@@ -285,8 +284,15 @@ export const getAllBooksApproved = async (req, res, next) => {
         .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
       return sendResponse(200, true, { totalDocs: result.length, result }, res)
     }
+    if (city, state) {
+      const result = await Book.find({ city, state })
+        .where('approved').equals(true)
+        .where('availability').equals(true)
+        .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
+      return sendResponse(200, true, { totalDocs: result.length, result }, res)
+    }
 
-    const result = await Book.find({ city, state }).sort({ createdAt: -1 })
+    const result = await Book.find().sort({ createdAt: -1 })
       .where('approved').equals(true)
       .where('availability').equals(true)
       .populate('language').populate('genre').skip(skip).limit(limit)
