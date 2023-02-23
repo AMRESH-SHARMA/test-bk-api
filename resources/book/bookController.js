@@ -272,7 +272,7 @@ export const getAllBooksApproved = async (req, res, next) => {
       return sendResponse(200, true, { totalDocs: result.length, result }, res)
     }
     if (genre && language) {
-      const result = await Book.find({ city, state, genre, language })
+      const result = await Book.find({ genre, language })
         .where('approved').equals(true)
         // .where('availability').equals(true)
         .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
@@ -286,7 +286,7 @@ export const getAllBooksApproved = async (req, res, next) => {
       return sendResponse(200, true, { totalDocs: result.length, result }, res)
     }
     if (genre) {
-      const result = await Book.find({ city, state, genre })
+      const result = await Book.find({ genre })
         .where('approved').equals(true)
         // .where('availability').equals(true)
         .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
@@ -300,7 +300,7 @@ export const getAllBooksApproved = async (req, res, next) => {
       return sendResponse(200, true, { totalDocs: result.length, result }, res)
     }
     if (language) {
-      const result = await Book.find({ city, state, language })
+      const result = await Book.find({ language })
         .where('approved').equals(true)
         // .where('availability').equals(true)
         .sort({ createdAt: -1 }).populate('language').populate('genre').skip(skip).limit(limit)
