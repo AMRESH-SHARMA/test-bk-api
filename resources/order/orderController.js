@@ -68,6 +68,7 @@ export const getOrdersByUserId = async (req, res, next) => {
         "status": el.status,
         "createdAt": el.createdAt,
         "updatedAt": el.updatedAt,
+        "paymentStatus": el.paymentStatus,
         "razorpayOrderId": el.razorpayOrderId,
         "razorpayPaymentId": el.razorpayPaymentId,
         "razorpaySignature": el.razorpaySignature,
