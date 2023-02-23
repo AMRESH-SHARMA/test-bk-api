@@ -64,7 +64,7 @@ export const registerUser = async (req, res, next) => {
     findUser.address.push(newUserAddress._id);
     await findUser.save();
 
-    sendResponse(201, true, user, res)
+    sendResponse(201, true, 'registration done', res)
   } catch (e) {
     console.log(e);
     if (e.code) {
@@ -88,7 +88,7 @@ export const loginUser = async (req, res, next) => {
       return sendResponse(400, false, 'password incorrect', res);
     }
 
-    const userData = await User.findOne({ email })
+    const userData = await User.findOne({ email }).populate('address');
     const result = userData
     const token = newToken(result)
     const options = {
