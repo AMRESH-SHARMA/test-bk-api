@@ -76,7 +76,6 @@ export const getOrdersByUserId = async (req, res, next) => {
     });
 
     sendResponse(200, true, { totalDocs, result: orders }, res);
-    // sendResponse(200, true, { totalDocs, result: userOrder }, res);
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)
