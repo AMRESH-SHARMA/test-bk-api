@@ -1,4 +1,5 @@
 import User from "./userModel.js"
+import UserAddress from '../userAddress/userAddressModel.js'
 import mongoose from "mongoose"
 import { sendResponse } from "../../util/sendResponse.js"
 import { newToken } from '../../util/jwt.js'
