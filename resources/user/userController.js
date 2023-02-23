@@ -43,6 +43,26 @@ export const registerUser = async (req, res, next) => {
     }
 
     const user = await User.create(newUserData);
+
+    const userId = user._id;
+    const { addressLine1, type, city, state, zipCode } = req.body;
+
+    let payLoadObj = {
+      addressLine1,
+      type,
+      city,
+      state,
+      country:'India',
+      zipCode
+    }
+
+    const newUserAddress = await UserAddress.create(payLoadObj);
+    console.log(newUserAddress);
+
+    const findUser = await User.findById(userId);
+    findUser.address.push(newUserAddress._id);
+    await findUser.save();
+
     sendResponse(201, true, user, res)
   } catch (e) {
     console.log(e);
