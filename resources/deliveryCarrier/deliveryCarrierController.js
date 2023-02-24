@@ -1,4 +1,4 @@
-import DeliveryCarrierModel from "./DeliveryCarrierModel.js"
+import DeliveryCarrier from "./DeliveryCarrierModel.js"
 import mongoose from "mongoose"
 import { sendResponse } from "../../util/sendResponse.js"
 import cloudinary from "../../util/cloudinary.js"
@@ -9,17 +9,17 @@ export const createDeliveryCarrier = async (req, res, next) => {
   try {
     const { uniqueId, carrierName, email, phone, address } = req.body;
     console.log(req.body);
-    const exist1 = await DeliveryCarrierModel.findOne({ carrierName: carrierName }).countDocuments();
+    const exist1 = await DeliveryCarrier.findOne({ carrierName: carrierName }).countDocuments();
     if (exist1) {
       return sendResponse(400, false, 'carrier name already in use', res)
     }
 
-    const exist2 = await DeliveryCarrierModel.findOne({ email: email }).countDocuments();
+    const exist2 = await DeliveryCarrier.findOne({ email: email }).countDocuments();
     if (exist2) {
       return sendResponse(409, false, 'email already in use', res)
     }
 
-    const newData = await DeliveryCarrierModel.create({
+    const newData = await DeliveryCarrier.create({
       _id: uniqueId,
       carrierName,
       email,
@@ -40,9 +40,9 @@ export const createDeliveryCarrier = async (req, res, next) => {
 export const getAllCarrier = async (req, res, next) => {
   try {
     const { skip, limit } = req.query
-    const totalDocs = await DeliveryCarrierModel.countDocuments();
+    const totalDocs = await DeliveryCarrier.countDocuments();
     if (totalDocs) {
-      const result = await DeliveryCarrierModel.find().sort({ carrierName: -1 }).skip(skip).limit(limit)
+      const result = await DeliveryCarrier.find().sort({ carrierName: -1 }).skip(skip).limit(limit)
       sendResponse(200, true, { totalDocs, result }, res)
     } else sendResponse(400, false, 'carrier not found', res)
   } catch (e) {
@@ -56,7 +56,7 @@ export const getSingleCarrier = async (req, res, next) => {
   try {
     const { carrierId } = req.params;
 
-    const result = await DeliveryCarrierModel.findById(carrierId);
+    const result = await DeliveryCarrier.findById(carrierId);
     if (!result) {
       return sendResponse(400, false, `Carrier does not exist with Id: ${carrierId}`, res)
     }
@@ -73,11 +73,11 @@ export const updateStatus = async (req, res, next) => {
     const { carrierId } = req.body;
     const TrueStatus = { approved: 'true' };
     const FalseStatus = { approved: 'false' };
-    const carrier = await DeliveryCarrierModel.findById(carrierId);
+    const carrier = await DeliveryCarrier.findById(carrierId);
     if (carrier.approved) {
-      await DeliveryCarrierModel.findByIdAndUpdate(carrierId, FalseStatus);
+      await DeliveryCarrier.findByIdAndUpdate(carrierId, FalseStatus);
     } else {
-      await DeliveryCarrierModel.findByIdAndUpdate(carrierId, TrueStatus);
+      await DeliveryCarrier.findByIdAndUpdate(carrierId, TrueStatus);
     }
     sendResponse(200, true, 'Status Updated', res)
   } catch (e) {
