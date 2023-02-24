@@ -29,9 +29,7 @@ app.get("/getUid", (req, res) => {
   }
 });
 
-// ****************************************************************************************************
-
-// ADMIN API
+// **********************************************************************************************ADMIN API
 
 //Admin
 import adminRoute from "./resources/admin/adminRoute.js";
@@ -89,19 +87,20 @@ app.use("/", deliveryFeesRoute);
 import serviceFeesRoute from "./resources/serviceFees/serviceFeesRoute.js";
 app.use("/", serviceFeesRoute);
 
+//Delivery Carrier
+import deliveryCarrierRoute from "./resources/deliveryCarrier/deliveryCarrierRoute.js";
+app.use("/", deliveryCarrierRoute);
+
 //Order
 import orderRoute from "./resources/order/orderRoute.js";
 app.use("/", orderRoute);
 
 
-// ****************************************************************************************************
-
-// CLIENT API
+// ***********************************************************************************************CLIENT API
 
 //User
 import user_ClientRoute from "./resources/user/user_ClientRoute.js";
 app.use("/client", user_ClientRoute);
-
 
 //User ADDRESS
 import userAddress_ClientRoute from "./resources/userAddress/userAddress_ClientRoute.js";
