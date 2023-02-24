@@ -1,5 +1,5 @@
-import DeliveryCarrier from "./DeliveryCarrierModel.js"
 import mongoose from "mongoose"
+import DeliveryCarrier from "./deliveryCarrierModel.js"
 import { sendResponse } from "../../util/sendResponse.js"
 import cloudinary from "../../util/cloudinary.js"
 import { mediaDel } from "../../util/mediaDel.js"
