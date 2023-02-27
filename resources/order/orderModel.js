@@ -43,6 +43,7 @@ const orderSchema = new mongoose.Schema({
     cancelled: { type: Date },
     returned: { type: Date },
   },
+  courier: { type: mongoose.Schema.Types.ObjectId, ref: "Courier" },
   razorpayOrderId: { type: String },
   razorpayPaymentId: { type: String },
   razorpaySignature: { type: String },

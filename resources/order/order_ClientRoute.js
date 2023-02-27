@@ -24,8 +24,4 @@ router.route("/order/single").post(vAccessToken, isAuthenticated, orderSingleIte
 
 router.route("/order/single/bill").post(vAccessToken, isAuthenticated, generateSingleOrderBill);
 
-// router.route("/genre/update-genre/:id").put(updategenre);
-
-// router.route("/genre/delete-single-genre/:id").delete(deleteSinglegenre);
-
 export default router

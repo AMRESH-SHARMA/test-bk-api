@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 
-const deliveryCarrierSchema = new mongoose.Schema({
-  carrierName: {
+const courierSchema = new mongoose.Schema({
+  courierName: {
     type: String,
     trim: true,
     unique: true,
@@ -61,5 +61,5 @@ const deliveryCarrierSchema = new mongoose.Schema({
   // ],
 }, { timestamps: true });
 
-const DeliveryCarrierModel = mongoose.model("DeliveryCarrier", deliveryCarrierSchema);
-export default DeliveryCarrierModel;
+const CourierModel = mongoose.model("Courier", courierSchema);
+export default CourierModel;

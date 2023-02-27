@@ -87,9 +87,9 @@ app.use("/", deliveryFeesRoute);
 import serviceFeesRoute from "./resources/serviceFees/serviceFeesRoute.js";
 app.use("/", serviceFeesRoute);
 
-//Delivery Carrier
-import deliveryCarrierRoute from "./resources/deliveryCarrier/deliveryCarrierRoute.js";
-app.use("/", deliveryCarrierRoute);
+// Courier
+import courierRoute from "./resources/courier/courierRoute.js";
+app.use("/", courierRoute);
 
 //Order
 import orderRoute from "./resources/order/orderRoute.js";

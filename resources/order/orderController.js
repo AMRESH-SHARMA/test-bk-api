@@ -7,13 +7,12 @@ import InternetHandlingFees from "../internetHandlingFees/internetHandlingFeesMo
 import User from "../user/userModel.js";
 import { sendResponse } from "../../util/sendResponse.js";
 import { equalsIgnoringCase } from "../../util/others.js";
-import { verifyPayment } from '../../util/razorpay.js'
-import { SECRETS } from "../../util/config.js"
+import { verifyPayment } from "../../util/razorpay.js"
 
-export const getNewOrders = async (req, res, next) => {
+export const getOrders = async (req, res, next) => {
   try {
     const { skip, limit, status } = req.query
-    const totalDocs = await Order.countDocuments();
+    const totalDocs = await Order.find({ status: status }).countDocuments();
     const userOrder = await Order.find({ status: status }).skip(skip).limit(limit);
     sendResponse(200, true, { totalDocs, result: userOrder }, res);
   } catch (e) {
@@ -38,6 +37,35 @@ export const getOrderById = async (req, res, next) => {
   }
 };
 
+export const updateOrderStatus = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { status, courier } = req.body;
+
+    let order = await Order.findById(orderId);
+
+    if (status === "processing") {
+      // await OrderProcessingEmail(parentData.email, order.order_id);
+    }
+    if (status === "cancelled") {
+      // await OrderCancelledEmail(parentData.email, order.order_id);
+    }
+    if (status === "dispatched") {
+      order.status = "dispatched";
+      order.courier = courier;
+      order.statusTimeline.dispatched = new Date();
+      // await OrderDispatchedEmail(parentData.email, order.order_id, body);
+    }
+    if (status === "delivered") {
+      // await OrderDeliveredEmail(parentData.email, order.order_id);
+    }
+    await order.save();
+    sendResponse(200, true, 'Updated Successfully', res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e, res)
+  }
+};
 
 // **********************************************************CLIENT CONTROLLER
 
@@ -49,7 +77,7 @@ export const getOrdersByUserId = async (req, res, next) => {
     const userOrder = await User.findById(userId)
       .select('order')
       .populate({
-        path: 'order', populate: { path: 'items', populate: { path: 'itemId', populate: { path: 'genre language' } } }
+        path: 'order', populate: { path: 'items courier', populate: { path: 'itemId', populate: { path: 'genre language' } } }
       })
       .skip(skip).limit(limit);
 
@@ -66,6 +94,8 @@ export const getOrdersByUserId = async (req, res, next) => {
         "totalAmountBeforeCharges": el.totalAmountBeforeCharges,
         "totalAmountAfterCharges": el.totalAmountAfterCharges,
         "status": el.status,
+        "statusTimeline": el.statusTimeline,
+        "courier": el.courier,
         "createdAt": el.createdAt,
         "updatedAt": el.updatedAt,
         "paymentStatus": el.paymentStatus,
@@ -349,23 +379,6 @@ export const generateSingleOrderBill = async (req, res, next) => {
   } catch (e) {
     console.log(e)
     sendResponse(400, false, e.message, res)
-  }
-};
-
-export const updateorder = async (req, res, next) => {
-  try {
-    const { order } = req.body;
-    const exist = await order.findOne({ order: order }).countDocuments();
-    if (exist) {
-      return sendResponse(401, false, 'order already exist', res)
-    }
-    const neworderData = {
-      order,
-    };
-    await order.findByIdAndUpdate(req.params.id, neworderData);
-    sendResponse(200, true, 'Updated Successfully', res)
-  } catch (e) {
-    sendResponse(400, false, e, res)
   }
 };
 
