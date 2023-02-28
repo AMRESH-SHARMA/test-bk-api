@@ -256,7 +256,7 @@ export const generateOrderBill = async (req, res, next) => {
 export const orderSingleItem = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
-    const { addressId, itemId, noOfDays, paymentId, orderId, signature, errorCode, errorDescription } = req.body;
+    const { addressId, itemId, noOfDays, paymentId, orderId, signature } = req.body;
 
     let book = await Book.findById(itemId);
     let address = await UserAddress.findById(addressId);
