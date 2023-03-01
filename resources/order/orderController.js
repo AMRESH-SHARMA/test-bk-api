@@ -395,12 +395,24 @@ export const generateSingleOrderBill = async (req, res, next) => {
 export const cancelOrderById = async (req, res, next) => {
   try {
     const { orderId } = req.params;
-
+    const userId = req.authTokenData.id;
     let order = await Order.find({ razorpayOrderId: orderId });
+    if (!order) {
+      return sendResponse(401, false, 'order not found with this id', res)
+    }
 
     order.status = "cancelled";
     order.statusTimeline.cancelled = new Date();
     await order.save();
+
+    let user = await User.findById(userId);
+    user.order.forEach((el, index) => {
+      if (el._id.equals(mongoose.Types.ObjectId(order._id))) {
+        user.order.splice(index, 1)
+      }
+    })
+    await user.save();
+
     // await OrderCancelledEmail(parentData.email, order.order_id);
     sendResponse(200, true, 'order cancelled', res)
   } catch (e) {
