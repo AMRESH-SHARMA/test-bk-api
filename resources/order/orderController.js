@@ -400,9 +400,8 @@ export const cancelOrderById = async (req, res, next) => {
 
     order.status = "cancelled";
     order.statusTimeline.cancelled = new Date();
-    // await OrderCancelledEmail(parentData.email, order.order_id);
-
     await order.save();
+    // await OrderCancelledEmail(parentData.email, order.order_id);
     sendResponse(200, true, 'order cancelled', res)
   } catch (e) {
     console.log(e);
