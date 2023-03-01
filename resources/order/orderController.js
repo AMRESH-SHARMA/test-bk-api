@@ -23,12 +23,13 @@ export const getOrders = async (req, res, next) => {
 
 export const getOrderById = async (req, res, next) => {
   try {
-    const order = await Order.findById(req.params.id).populate({
+    const { orderId } = req.params;
+    const order = await Order.findById(orderId).populate({
       path: 'items',
       populate: { path: 'itemId' }
     });
     if (!order) {
-      return sendResponse(400, false, `order does not exist with Id: ${req.params.id}`, res)
+      return sendResponse(400, false, `order does not exist with Id: ${orderId}`, res)
     }
     sendResponse(200, true, order, res)
   } catch (e) {
@@ -390,3 +391,21 @@ export const deleteSingleorder = async (req, res, next) => {
     sendResponse(400, false, e.message, res)
   }
 }
+
+export const cancelOrderById = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+
+    let order = await Order.findById(orderId);
+
+    order.status = "cancelled";
+    order.statusTimeline.cancelled = new Date();
+    // await OrderCancelledEmail(parentData.email, order.order_id);
+
+    await order.save();
+    sendResponse(200, true, 'order cancelled', res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e, res)
+  }
+};

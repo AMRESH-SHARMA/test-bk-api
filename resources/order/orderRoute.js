@@ -11,7 +11,7 @@ import { vAccessToken } from "../../util/validators.js"
 
 router.route("/order").get(vAccessToken, isAuthenticatedAdmin, getOrders);
 
-router.route("/order/:id").get(vAccessToken, isAuthenticatedAdmin, getOrderById);
+router.route("/order/:orderId").get(vAccessToken, isAuthenticatedAdmin, getOrderById);
 
 router.route("/order/:orderId").put(updateOrderStatus);
 

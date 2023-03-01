@@ -8,6 +8,7 @@ import {
   generateOrderBill,
   orderSingleItem,
   generateSingleOrderBill,
+  cancelOrderById
 } from './orderController.js'
 import { isAuthenticated } from "../../util/auth.js"
 import { vAccessToken } from "../../util/validators.js"
@@ -17,6 +18,8 @@ router.route("/order").get(vAccessToken, isAuthenticated, getOrdersByUserId);
 router.route("/order/:id").get(vAccessToken, isAuthenticated, getOrderById);
 
 router.route("/order").post(vAccessToken, isAuthenticated, orderCart);
+
+router.route("/order/:orderId").post(vAccessToken, isAuthenticated, cancelOrderById);
 
 router.route("/order/bill").post(vAccessToken, isAuthenticated, generateOrderBill);
 
