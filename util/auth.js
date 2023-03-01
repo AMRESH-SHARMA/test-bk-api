@@ -10,6 +10,7 @@ export const isAuthenticated = async (req, res, next) => {
 
     // console.log(tokendecoded);
     req.authTokenData = tokendecoded;
+    // console.log(tokendecoded);
 
     next();
   } catch (e) {

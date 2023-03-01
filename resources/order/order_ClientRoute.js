@@ -19,7 +19,7 @@ router.route("/order/:id").get(vAccessToken, isAuthenticated, getOrderById);
 
 router.route("/order").post(vAccessToken, isAuthenticated, orderCart);
 
-router.route("/order/:orderId").post(vAccessToken, isAuthenticated, cancelOrderById);
+router.route("/order/cancel/:orderId").post(vAccessToken, isAuthenticated, cancelOrderById);
 
 router.route("/order/bill").post(vAccessToken, isAuthenticated, generateOrderBill);
 
