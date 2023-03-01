@@ -19,5 +19,6 @@ export const SECRETS = {
   // aws_accessKey_Id: process.env.AWS_ACCESS_KEY_ID,
   // aws_secret_key_Id: process.env.AWS_SECRET_ACCESS_KEY,
   // region: process.env.AWS_REGION,
-  // sendGrid: process.env.SEND_GRID,
+  sendGrid: process.env.SEND_GRID,
+  senderEmail: process.env.SENDER_EMAIL,
 };

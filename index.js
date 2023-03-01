@@ -98,6 +98,10 @@ app.use("/", orderRoute);
 
 // ***********************************************************************************************CLIENT API
 
+//User OTP during resistration
+import userOtpVerification_ClientRoute from "./resources/userOtpVerification/userOtpVerification_ClientRoute.js";
+app.use("/client", userOtpVerification_ClientRoute);
+
 //User
 import user_ClientRoute from "./resources/user/user_ClientRoute.js";
 app.use("/client", user_ClientRoute);
