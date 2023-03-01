@@ -1,4 +1,5 @@
 import User from "./userModel.js"
+import UserOtpVerification from "../userOtpVerification/userOtpVerificationModel.js"
 import UserAddress from '../userAddress/userAddressModel.js'
 import mongoose from "mongoose"
 import { sendResponse } from "../../util/sendResponse.js"
@@ -11,15 +12,14 @@ import { mediaDel } from "../../util/mediaDel.js"
 export const registerUser = async (req, res, next) => {
   try {
     const { userName, email, password, address } = req.body;
-    console.log(req.body)
 
+    const verifiedEmail = await UserOtpVerification.findOne({ email: email }).where('verified').equals(true);
+    if (!verifiedEmail) {
+      return sendResponse(400, false, 'email is not verified', res)
+    }
     const exist1 = await User.findOne({ userName: userName }).countDocuments();
     if (exist1) {
       return sendResponse(400, false, 'username already in use', res)
-    }
-    const exist2 = await User.findOne({ email: email }).countDocuments();
-    if (exist2) {
-      return sendResponse(400, false, 'email already in use', res)
     }
 
     const hashedPassword = await bcryptPassword(password)
@@ -44,7 +44,9 @@ export const registerUser = async (req, res, next) => {
     }
 
     const user = await User.create(newUserData);
-
+    verifiedEmail.reserved = true;
+    verifiedEmail.save();
+    
     const userId = user._id;
     const { addressLine1, type, city, state, zipCode } = req.body;
 
