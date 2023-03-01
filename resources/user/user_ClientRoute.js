@@ -20,7 +20,8 @@ import {
   pushToCart,
   popFromCart,
   emptyCart,
-  getCart
+  getCart,
+  updateItemDurationInCart
 } from "./userController.js"
 import { isAuthenticated } from "../../util/auth.js"
 import { vUserLogin, vUsernameUnique, vBookmark, vAccessToken } from "../../util/validators.js"
@@ -44,6 +45,8 @@ router.route("/user/all-bookmark").get(vAccessToken, isAuthenticated, allBookmar
 
 // cart
 router.route("/user/cart/:bookId").post(vAccessToken, isAuthenticated, pushToCart);
+
+router.route("/user/cart/item/:bookId").put(vAccessToken, isAuthenticated, updateItemDurationInCart);
 
 router.route("/user/cart").post(vAccessToken, isAuthenticated, popFromCart);
 

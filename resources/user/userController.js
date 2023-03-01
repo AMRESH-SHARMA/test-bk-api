@@ -53,7 +53,7 @@ export const registerUser = async (req, res, next) => {
       type,
       city,
       state,
-      country:'India',
+      country: 'India',
       zipCode
     }
 
@@ -565,6 +565,31 @@ export const pushToCart = async (req, res, next) => {
   }
 };
 
+// UPDATE CART
+export const updateItemDurationInCart = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+    const noOfDays = req.body.noOfDays;
+    if (parseInt(noOfDays) < 3) return sendResponse(400, true, 'minimum days should be 3', res)
+    const bookId = req.params.bookId;
+
+    let user = await User.findById(userId);
+
+    // Update no of days
+    user.cart.forEach((el) => {
+      if (el.itemId.equals(mongoose.Types.ObjectId(bookId))) {
+        el.noOfDays = noOfDays;
+      }
+    })
+
+    await user.save();
+    return sendResponse(201, true, 'item duration updated in cart', res)
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
 // POP FROM CART
 export const popFromCart = async (req, res, next) => {
   try {
@@ -621,8 +646,6 @@ export const getCart = async (req, res, next) => {
     let subTotal = {
       totalAmountBeforeCharges,
     };
-
-    console.log(subTotal);
     return sendResponse(201, true, { cartData, subTotal }, res);
 
   } catch (e) {
