@@ -112,6 +112,78 @@ export const addBook = async (req, res, next) => {
     await user.save();
 
     const result = await Book.findById(uniqueId).populate('genre language')
+    return sendResponse(201, true, result, res)
+  } catch (e) {
+    console.log(e);
+    return sendResponse(400, false, e.message, res)
+  }
+};
+
+export const addBookByClient = async (req, res, next) => {
+  try {
+    const userId = req.authTokenData.id;
+    const { uniqueId, bookName, genre, language, author, description, rentPerDay, city, state } = req.body;
+    const { image1, image2, image3, image4 } = req.files
+
+    var payloadObj = {
+      _id: uniqueId,
+      bookName,
+      genre,
+      language,
+      author,
+      description,
+      rentPerDay,
+      uploadedBy:userId,
+      city,
+      state
+    }
+
+    await cloudinary.v2.uploader.upload(image1[0].path, {
+      folder: "book/",
+    }).then((result1) => {
+      payloadObj.image1 = {
+        public_id: result1.public_id,
+        url: result1.url,
+      }
+    })
+
+    if (image2) {
+      await cloudinary.v2.uploader.upload(image2[0].path, {
+        folder: "book/",
+      }).then((result2) => {
+        payloadObj.image2 = {
+          public_id: result2.public_id,
+          url: result2.url,
+        }
+      })
+    }
+    if (image3) {
+      await cloudinary.v2.uploader.upload(image3[0].path, {
+        folder: "book/",
+      }).then((result3) => {
+        payloadObj.image3 = {
+          public_id: result3.public_id,
+          url: result3.url,
+        }
+      })
+    }
+    if (image4) {
+      await cloudinary.v2.uploader.upload(image4[0].path, {
+        folder: "book/",
+      }).then((result4) => {
+        payloadObj.image4 = {
+          public_id: result4.public_id,
+          url: result4.url,
+        }
+      })
+    }
+    mediaDel()
+    const newBook = await Book.create(payloadObj)
+    const user = await User.findById(userId)
+    user.booksAdded.push(newBook._id)
+    await user.save();
+
+    const result = await Book.findById(uniqueId).populate('genre language')
     sendResponse(201, true, result, res)
   } catch (e) {
     console.log(e);

@@ -7,7 +7,8 @@ import {
   getSingleBookApproved,
   addBook,
   deleteSingleBookApproved,
-  updateBookApproved
+  updateBookApproved,
+  addBookByClient
 } from './bookController.js'
 
 import multer from "multer";
@@ -24,7 +25,7 @@ router.route("/book").get(getAllBooksApproved);
 
 router.route("/book/get-single-book/:id").get(getSingleBookApproved);
 
-router.route("/book/create-book").post(vAccessToken, isAuthenticated, cpUpload, addBook);
+router.route("/book").post(vAccessToken, isAuthenticated, cpUpload, addBookByClient);
 
 router.route("/book/:bookId").put(vAccessToken, isAuthenticated, updateBookApproved);
 
