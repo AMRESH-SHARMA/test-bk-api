@@ -123,9 +123,10 @@ export const addBookByClient = async (req, res, next) => {
   try {
     const userId = req.authTokenData.id;
     const { uniqueId, bookName, genre, language, author, description, rentPerDay, city, state } = req.body;
+    console.log(req.body);
     const { image1, image2, image3, image4 } = req.files
 
-    var payloadObj = {
+    let payloadObj = {
       _id: uniqueId,
       bookName,
       genre,
@@ -133,7 +134,7 @@ export const addBookByClient = async (req, res, next) => {
       author,
       description,
       rentPerDay,
-      uploadedBy:userId,
+      uploadedBy: userId,
       city,
       state
     }
@@ -179,6 +180,7 @@ export const addBookByClient = async (req, res, next) => {
     }
     mediaDel()
     const newBook = await Book.create(payloadObj)
+    console.log(newBook);
     const user = await User.findById(userId)
     user.booksAdded.push(newBook._id)
     await user.save();

@@ -83,25 +83,27 @@ const bookSchema = new mongoose.Schema({
   city: {
     type: String,
     trim: true,
+    required: true,
     maxLength: 20,
   },
   state: {
     type: String,
     trim: true,
-    // required: true,
+    required: true,
     maxLength: 20,
   },
 }, { timestamps: true });
 
+
 bookSchema.pre('save', function (next) {
   try {
-    if (city) {
+    if (this.city) {
       const words = this.city.split(' ')
       this.city = words
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
         .join(' ')
     }
-    if (state) {
+    if (this.state) {
       const words = this.state.split(' ')
       this.state = words
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
