@@ -396,14 +396,6 @@ export const cancelOrderById = async (req, res, next) => {
     order[0].status = "cancelled";
     order[0].statusTimeline.cancelled = new Date();
     await order[0].save();
-
-    let user = await User.findById(userId);
-    user.order.forEach((el, index) => {
-      if (el._id.equals(mongoose.Types.ObjectId(order[0]._id))) {
-        user.order.splice(index, 1)
-      }
-    })
-    await user.save();
     // await OrderCancelledEmail(parentData.email, order.order_id);
     sendResponse(200, true, 'order cancelled', res)
   } catch (e) {

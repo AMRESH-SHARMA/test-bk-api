@@ -140,18 +140,17 @@ export const logout = async (req, res, next) => {
   }
 };
 
-
 // 4.Forgot Password
 export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email: email });
-
-    if (!user) { return sendResponse(404, false, 'user not found', res) }
+    const exist = await User.findOne({ email: email }).countDocuments();
+    if (!exist) { return sendResponse(404, false, 'user not found', res) }
     // Get ResetPassword Token
     const OTP = generateOtp();
+    let user = await User.findOne({ email: email });
     user.resetPasswordOtp = OTP;
-    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+    user.resetPasswordUpdatedAt = new Date();
     await user.save()
     //SEND EMAIL SERVICE
     sendResponse(200, true, user, res)
@@ -161,20 +160,41 @@ export const forgotPassword = async (req, res, next) => {
   }
 };
 
+// Change password otp verification
+export const changePasswordOtpVerify = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email: email }).where('resetPasswordOtp').equals(otp);
+    if (!user) return sendResponse(400, false, "otp is incorrect", res)
+
+    const timeDiff = parseInt((new Date() - user.resetPasswordUpdatedAt) / (1000 * 60));
+    if (timeDiff > 10) { return sendResponse(400, false, 'otp expired', res) }
+
+    user.resetPasswordOtpVerify = true;
+    await user.save();
+    sendResponse(200, true, "otp verified", res);
+  } catch (e) {
+    console.log(e);
+    sendResponse(400, false, e.message, res)
+  }
+};
+
 // 8.update User password
 export const updatePassword = async (req, res, next) => {
-  const { email, otp, newPassword, confirmPassword } = req.body;
+  const { email, newPassword, confirmPassword } = req.body;
 
   if (newPassword != confirmPassword) {
     return sendResponse(400, false, "password and confirm password does not match", res)
   }
-  const user = await User.findOne({ email: email }).where('resetPasswordOtp').equals(otp).countDocuments();
-  if (!user) return sendResponse(400, false, "otp is incorrect", res)
+  const user = await User.findOne({ email: email }).where('resetPasswordOtpVerify').equals(true).countDocuments();
+  if (!user) return sendResponse(400, false, "otp is not verified", res)
 
-  if (new Date() - user.resetPasswordExpire) { return sendResponse(400, false, "otp expired", res) }
+  const timeDiff = parseInt((new Date() - user.resetPasswordUpdatedAt) / (1000 * 60));
+  if (timeDiff > 10) { return sendResponse(400, false, 'otp expired', res) }
 
   const hashedPassword = await bcryptPassword(newPassword);
   user.password = hashedPassword;
+  user.resetPasswordOtpVerify = false;
   await user.save();
   sendToken(200, true, "password updated", res);
 };

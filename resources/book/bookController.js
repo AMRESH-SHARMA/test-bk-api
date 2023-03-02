@@ -107,15 +107,12 @@ export const addBook = async (req, res, next) => {
     }
     mediaDel()
     const newBook = await Book.create(payloadObj)
-
     const user = await User.findById(uploadedBy)
     user.booksAdded.push(newBook._id)
     await user.save();
 
     const result = await Book.findById(uniqueId).populate('genre language')
-
     sendResponse(201, true, result, res)
-
   } catch (e) {
     console.log(e);
     sendResponse(400, false, e.message, res)

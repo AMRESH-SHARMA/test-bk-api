@@ -42,10 +42,7 @@ export const verifyOtp = async (req, res, next) => {
       return sendResponse(400, false, 'invalid otp', res);
     }
     let timeDiff = parseInt((new Date() - user.updatedAt) / (1000 * 60));
-    if (timeDiff > 5) {
-      return sendResponse(400, false, 'otp expired', res);
-    }
-
+    if (timeDiff > 10) { return sendResponse(400, false, 'otp expired', res); }
     user.verified = true;
     user.save();
     sendResponse(201, true, 'otp verified', res);

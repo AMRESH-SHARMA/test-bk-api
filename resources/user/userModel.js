@@ -52,11 +52,6 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: "true",
   },
-  otp: {
-    type: Number,
-    trim: true,
-    default: null,
-  },
   booksAdded: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -82,7 +77,8 @@ const userSchema = new mongoose.Schema({
     }
   ],
   resetPasswordOtp: Number,
-  resetPasswordExpire: Date,
+  resetPasswordOtpVerify: { type: Boolean, default: "false" },
+  resetPasswordUpdatedAt: Date,
 }, { timestamps: true });
 
 // Compare Password

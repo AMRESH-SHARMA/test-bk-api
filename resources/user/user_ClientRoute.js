@@ -9,6 +9,7 @@ import {
   userNameExist,
   // logout,
   forgotPassword,
+  changePasswordOtpVerify,
   updatePassword,
   updateUser,
   getSingleUser,
@@ -29,6 +30,8 @@ router.route("/user/register").post(upload.single('image'), registerUser);
 router.route("/user/login").post(vUserLogin, loginUser);
 
 router.route("/user/forgotPassword").post(forgotPassword);
+
+router.route("/user/forgotPassword/OtpVerify").post(changePasswordOtpVerify);
 
 router.route("/user/updatePassword").post(updatePassword);
 
