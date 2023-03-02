@@ -8,21 +8,19 @@ import { newToken } from '../../util/jwt.js'
 import { bcryptPassword } from '../../util/bcryptPassword.js'
 import cloudinary from "../../util/cloudinary.js"
 import { mediaDel } from "../../util/mediaDel.js"
+import { generateFromEmail, generateUsername } from "unique-username-generator";
 
 //Register a User
 export const registerUser = async (req, res, next) => {
   try {
-    const { userName, email, password, address } = req.body;
+    const { email, password, address } = req.body;
 
     const verifiedEmail = await UserOtpVerification.findOne({ email: email }).where('verified').equals(true);
     if (!verifiedEmail) {
       return sendResponse(400, false, 'email is not verified', res)
     }
-    const exist1 = await User.findOne({ userName: userName }).countDocuments();
-    if (exist1) {
-      return sendResponse(400, false, 'username already in use', res)
-    }
 
+    const userName = generateFromEmail(email, 3);
     const hashedPassword = await bcryptPassword(password)
 
     let newUserData = {
@@ -61,8 +59,6 @@ export const registerUser = async (req, res, next) => {
     }
 
     const newUserAddress = await UserAddress.create(payLoadObj);
-    console.log(newUserAddress);
-
     const findUser = await User.findById(userId);
     findUser.address.push(newUserAddress._id);
     await findUser.save();
