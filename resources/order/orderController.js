@@ -384,15 +384,6 @@ export const generateSingleOrderBill = async (req, res, next) => {
   }
 };
 
-// export const deleteSingleorder = async (req, res, next) => {
-//   try {
-//     await order.deleteOne({ _id: req.params.id })
-//     sendResponse(201, true, 'order deleted', res)
-//   } catch (e) {
-//     sendResponse(400, false, e.message, res)
-//   }
-// }
-
 export const cancelOrderById = async (req, res, next) => {
   try {
     const { orderId } = req.params;

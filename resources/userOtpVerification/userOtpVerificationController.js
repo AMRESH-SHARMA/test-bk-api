@@ -1,12 +1,13 @@
 import UserOtpVerification from "./userOtpVerificationModel.js"
 import { sendResponse } from "../../util/sendResponse.js"
+import { generateOtp } from "../../util/others.js"
 
 //Send OTP during registration
 export const sendUserOtp = async (req, res, next) => {
   try {
     const { email } = req.body;
     // Generate OTP
-    const otp = Math.floor(1000 + Math.random() * 9000);
+    const otp = generateOtp()
 
     const emailInUse = await UserOtpVerification.findOne({ email: email })
       .where('reserved').equals(true)
@@ -17,6 +18,7 @@ export const sendUserOtp = async (req, res, next) => {
 
     const exist = await UserOtpVerification.findOne({ email: email }).countDocuments();
     if (exist) {
+      console.log(exist);
       await UserOtpVerification.findOneAndUpdate({ email, otp })
       return sendResponse(201, true, otp, res)
     }

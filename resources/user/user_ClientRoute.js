@@ -8,10 +8,8 @@ import {
   loginUser,
   userNameExist,
   // logout,
-  // forgotPassword,
-  // resetPassword,
-  // updatePassword,
-  // updateProfile,
+  forgotPassword,
+  updatePassword,
   updateUser,
   getSingleUser,
   getBooksUploadedBySingleUser,
@@ -29,6 +27,10 @@ import { vUserLogin, vUsernameUnique, vBookmark, vAccessToken } from "../../util
 router.route("/user/register").post(upload.single('image'), registerUser);
 
 router.route("/user/login").post(vUserLogin, loginUser);
+
+router.route("/user/forgotPassword").post(forgotPassword);
+
+router.route("/user/updatePassword").post(updatePassword);
 
 router.route("/user/username-unique").post(vAccessToken, isAuthenticated, vUsernameUnique, userNameExist);
 

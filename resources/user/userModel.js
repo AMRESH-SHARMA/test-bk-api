@@ -81,7 +81,7 @@ const userSchema = new mongoose.Schema({
       ref: "Order",
     }
   ],
-  resetPasswordToken: String,
+  resetPasswordOtp: Number,
   resetPasswordExpire: Date,
 }, { timestamps: true });
 
@@ -91,21 +91,21 @@ userSchema.methods.comparePassword = async function (password) {
 };
 
 // Generating   Reset Token
-userSchema.methods.getResetPasswordToken = function () {
-  // Generating Token
-  const resetToken = crypto.randomBytes(20).toString("hex");
+// userSchema.methods.getResetPasswordToken = function () {
+//   // Generating Token
+//   const resetToken = crypto.randomBytes(20).toString("hex");
 
-  // Hashing and adding reset PasswordToken to userSchema
-  this.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-  //expire password time
-  // console.log(this.resetPasswordToken)
-  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;//15 minut
+//   // Hashing and adding reset PasswordToken to userSchema
+//   this.resetPasswordToken = crypto
+//     .createHash("sha256")
+//     .update(resetToken)
+//     .digest("hex");
+//   //expire password time
+//   // console.log(this.resetPasswordToken)
+//   this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;//15 minute
 
-  return resetToken;
-};
+//   return resetToken;
+// };
 
 const UserModel = mongoose.model("User", userSchema);
 export default UserModel;
