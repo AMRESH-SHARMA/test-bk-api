@@ -5,7 +5,6 @@ import { vAccessToken } from "../../util/validators.js"
 import {
   getAllBooksApproved,
   getSingleBookApproved,
-  addBook,
   deleteSingleBookApproved,
   updateBookApproved,
   addBookByClient

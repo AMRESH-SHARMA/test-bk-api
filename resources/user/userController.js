@@ -192,7 +192,7 @@ export const updatePassword = async (req, res, next) => {
   user.password = hashedPassword;
   user.resetPasswordOtpVerify = false;
   await user.save();
-  sendToken(200, true, "password updated", res);
+  sendResponse(200, true, "password updated", res);
 };
 
 // user create
