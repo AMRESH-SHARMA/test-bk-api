@@ -8,7 +8,7 @@ import { newToken } from '../../util/jwt.js'
 import { bcryptPassword } from '../../util/bcryptPassword.js'
 import cloudinary from "../../util/cloudinary.js"
 import { mediaDel } from "../../util/mediaDel.js"
-import { generateFromEmail, generateUsername } from "unique-username-generator";
+import { generateFromEmail } from "unique-username-generator";
 
 //Register a User
 export const registerUser = async (req, res, next) => {
@@ -182,7 +182,7 @@ export const updatePassword = async (req, res, next) => {
   if (newPassword != confirmPassword) {
     return sendResponse(400, false, "password and confirm password does not match", res)
   }
-  const user = await User.findOne({ email: email }).where('resetPasswordOtpVerify').equals(true).countDocuments();
+  const user = await User.findOne({ email: email }).where('resetPasswordOtpVerify').equals(true);
   if (!user) return sendResponse(400, false, "otp is not verified", res)
 
   const timeDiff = parseInt((new Date() - user.resetPasswordUpdatedAt) / (1000 * 60));
