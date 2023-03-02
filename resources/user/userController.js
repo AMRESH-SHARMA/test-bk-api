@@ -149,7 +149,7 @@ export const forgotPassword = async (req, res, next) => {
     user.resetPasswordUpdatedAt = new Date();
     await user.save()
     //SEND EMAIL SERVICE
-    sendResponse(200, true, user, res)
+    sendResponse(200, true, OTP, res)
   } catch (e) {
     console.log(e);
     return sendResponse(400, false, e.message, res);
