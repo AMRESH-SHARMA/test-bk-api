@@ -175,7 +175,7 @@ export const changePasswordOtpVerify = async (req, res, next) => {
   }
 };
 
-// 8.update User password
+//update User password
 export const updatePassword = async (req, res, next) => {
   const { email, newPassword, confirmPassword } = req.body;
 
@@ -183,7 +183,7 @@ export const updatePassword = async (req, res, next) => {
     return sendResponse(400, false, "password and confirm password does not match", res)
   }
   const user = await User.findOne({ email: email }).where('resetPasswordOtpVerify').equals(true);
-  if (!user) return sendResponse(400, false, "otp is not verified", res)
+  if (!user) return sendResponse(400, false, "otp not verified", res)
 
   const timeDiff = parseInt((new Date() - user.resetPasswordUpdatedAt) / (1000 * 60));
   if (timeDiff > 10) { return sendResponse(400, false, 'otp expired', res) }
